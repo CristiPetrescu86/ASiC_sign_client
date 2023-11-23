@@ -80,7 +80,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>ro.client_sign_app.clientapp/ro.client_sign_app.clientapp.MainApplication
+                            <mainClass>ro.client_sign_app.clientapp/ro.client_sign_app.clientapp.LoginPage
                             </mainClass>
                         </configuration>
                     </execution>
