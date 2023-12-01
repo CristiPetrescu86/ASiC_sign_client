@@ -2,6 +2,10 @@ package ro.client_sign_app.clientapp.Controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
@@ -16,6 +20,7 @@ import java.util.Base64;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 import org.controlsfx.tools.Utils;
 
 public class LoginController {
@@ -28,6 +33,10 @@ public class LoginController {
 
     private String loginURL = "http://localhost:8080/api/login";
     private static String successLogin = "Authentication successful";
+
+    private Stage stage1;
+    private Scene scene1;
+    private Parent root1;
 
     @FXML
     private void loginButtonAction(ActionEvent event) {
@@ -68,8 +77,19 @@ public class LoginController {
             in.close();
 
             if(successLogin.equals(response.toString())) {
-                // REDIRECT OK PAGE
-                UtilsClass.infoBox(response.toString(), "rest", null);
+                //root1 = FXMLLoader.load(getClass().getResource("/ro/client_sign_app/clientapp/main-view.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ro/client_sign_app/clientapp/main-view.fxml"));
+                stage1 = new Stage();
+                stage1.setTitle("Main Application Window");
+                stage1.setScene(new Scene(loader.load()));
+                stage1.show();
+
+                MainController mainController = loader.getController();
+                mainController.initAuthToken(base64CredEncoded);
+
+                final Node source = (Node) event.getSource();
+                final Stage stage2 = (Stage) source.getScene().getWindow();
+                stage2.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
