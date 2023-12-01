@@ -1,2 +1,3 @@
-ro\client_sign_app\clientapp\LoginController.class
+ro\client_sign_app\clientapp\Controller\UtilsClass.class
 ro\client_sign_app\clientapp\LoginPage.class
+ro\client_sign_app\clientapp\Controller\LoginController.class
