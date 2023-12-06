@@ -1,5 +1,12 @@
 package ro.client_sign_app.clientapp.Controller;
 
+import eu.europa.esig.dss.enumerations.ASiCContainerType;
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.model.*;
+import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
+import eu.europa.esig.dss.token.Pkcs12SignatureToken;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,13 +14,26 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.List;
+
+// -----------
+ import eu.europa.esig.dss.asic.cades.ASiCWithCAdESSignatureParameters;
+ import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
+ import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
+ import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
+ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+ import eu.europa.esig.dss.validation.CommonCertificateVerifier;
+ import eu.europa.esig.dss.asic.common.*;
+// -----------
+
+
 
 public class MainController {
 
@@ -67,8 +87,39 @@ public class MainController {
 
     @FXML
     private void getSignatureAction(ActionEvent event) {
+        // D:\Facultate\Master\Dizertatie\Part2\TEST_SEMNATURI\xmlFile1.xml
 
+        try (Pkcs12SignatureToken token = new Pkcs12SignatureToken("D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1_keystore.p12", new KeyStore.PasswordProtection("123456".toCharArray()))) {
+
+            DSSDocument documentToBeSigned = new FileDocument(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml"));
+
+            ASiCWithXAdESSignatureParameters parameters = new ASiCWithXAdESSignatureParameters();
+            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
+            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
+            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+
+            List<DSSPrivateKeyEntry> keys = token.getKeys();
+            DSSPrivateKeyEntry signingKey = keys.get(0);
+
+            parameters.setSigningCertificate(signingKey.getCertificate());
+            parameters.setCertificateChain(signingKey.getCertificateChain());
+
+            CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
+            ASiCWithXAdESService service = new ASiCWithXAdESService(commonCertificateVerifier);
+            ToBeSigned dataToSign = service.getDataToSign(documentToBeSigned, parameters);
+
+            DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
+            SignatureValue signatureValue = token.sign(dataToSign,digestAlgorithm,signingKey);
+
+            DSSDocument signedDoc = service.signDocument(documentToBeSigned,parameters,signatureValue);
+
+            try (OutputStream out = new FileOutputStream( "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED.zip"))
+            {
+                signedDoc.writeTo(out);
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
-
 }
