@@ -20,6 +20,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
@@ -40,7 +42,8 @@ public class MainController {
     private String getCertUrl = "http://localhost:8080/api/getCert";
 
     private String authToken;
-    void initAuthToken(String token){
+
+    void initAuthToken(String token) {
         this.authToken = token;
     }
 
@@ -54,8 +57,8 @@ public class MainController {
             connection.setRequestProperty("Authorization", "Basic " + authToken);
 
             int responseCode = connection.getResponseCode();
-            if(responseCode != 200){
-                UtilsClass.infoBox("Eroare a serverului","Eroare",null);
+            if (responseCode != 200) {
+                UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
                 return;
             }
 
@@ -71,7 +74,7 @@ public class MainController {
             try {
                 Files.write(Paths.get("D:\\Facultate\\Master\\Dizertatie\\Part2\\Certificate_Client\\cert.crt"), response.toString().getBytes());
             } catch (IOException e) {
-                UtilsClass.infoBox("Eroare de salvare a fisierului","Erorr",null);
+                UtilsClass.infoBox("Eroare de salvare a fisierului", "Erorr", null);
                 e.printStackTrace();
             }
 
@@ -89,7 +92,7 @@ public class MainController {
     private void getSignatureAction(ActionEvent event) {
         // D:\Facultate\Master\Dizertatie\Part2\TEST_SEMNATURI\xmlFile1.xml
 
-        try (Pkcs12SignatureToken token = new Pkcs12SignatureToken("D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1_keystore.p12", new KeyStore.PasswordProtection("123456".toCharArray()))) {
+        /*try (Pkcs12SignatureToken token = new Pkcs12SignatureToken("D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1_keystore.p12", new KeyStore.PasswordProtection("123456".toCharArray()))) {
 
             DSSDocument documentToBeSigned = new FileDocument(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml"));
 
@@ -119,6 +122,42 @@ public class MainController {
             }
         }
         catch (IOException e) {
+            e.printStackTrace();
+        }*/
+        String certPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1.crt";
+        try (FileInputStream fileInputStream = new FileInputStream(certPath)) {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            X509Certificate signingCertificate = (X509Certificate) certificateFactory.generateCertificate(fileInputStream);
+            CertificateToken signingCert = new CertificateToken(signingCertificate);
+
+            DSSDocument documentToBeSigned = new FileDocument(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml"));
+
+            ASiCWithXAdESSignatureParameters parameters = new ASiCWithXAdESSignatureParameters();
+            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
+            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
+            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+
+            parameters.setSigningCertificate(signingCert);
+            //parameters.setCertificateChain(signingCert);
+
+            CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
+            ASiCWithXAdESService service = new ASiCWithXAdESService(commonCertificateVerifier);
+            ToBeSigned dataToSign = service.getDataToSign(documentToBeSigned, parameters);
+            DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
+
+            try (Pkcs12SignatureToken token = new Pkcs12SignatureToken("D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1_keystore.p12", new KeyStore.PasswordProtection("123456".toCharArray()))) {
+                List<DSSPrivateKeyEntry> keys = token.getKeys();
+                DSSPrivateKeyEntry signingKey = keys.get(0);
+                SignatureValue signatureValue = token.sign(dataToSign, digestAlgorithm, signingKey);
+
+                DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
+
+                try (OutputStream out = new FileOutputStream("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test.zip")) {
+                    signedDoc.writeTo(out);
+                }
+            }
+
+        } catch (IOException | CertificateException e) {
             e.printStackTrace();
         }
     }
