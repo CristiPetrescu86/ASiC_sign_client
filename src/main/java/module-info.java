@@ -12,6 +12,7 @@ module ro.client_sign_app.clientapp {
     requires jpms_dss_asic_xades;
     requires jpms_dss_token;
     requires jpms_dss_asic_common;
+    requires com.fasterxml.jackson.databind;
 
     exports ro.client_sign_app.clientapp;
     exports ro.client_sign_app.clientapp.Controller;
