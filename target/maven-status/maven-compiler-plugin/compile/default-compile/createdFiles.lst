@@ -1,5 +1,8 @@
+ro\client_sign_app\clientapp\Signatures\Post_SignatureValue.class
 ro\client_sign_app\clientapp\Controller\MainController.class
-ro\client_sign_app\clientapp\Controller\UtilsClass.class
-ro\client_sign_app\clientapp\LoginPage.class
+ro\client_sign_app\clientapp\Signatures\ASiC_SwithXAdES.class
 ro\client_sign_app\clientapp\Controller\LoginController.class
 ro\client_sign_app\clientapp\Controller\PostParams.class
+ro\client_sign_app\clientapp\Signatures\ASiC_SwithCAdES.class
+ro\client_sign_app\clientapp\Controller\UtilsClass.class
+ro\client_sign_app\clientapp\LoginPage.class

@@ -1,4 +1,6 @@
 package ro.client_sign_app.clientapp.Controller;
+import ro.client_sign_app.clientapp.Signatures.ASiC_SwithCAdES;
+import ro.client_sign_app.clientapp.Signatures.ASiC_SwithXAdES;
 
 import eu.europa.esig.dss.enumerations.*;
 import eu.europa.esig.dss.model.*;
@@ -34,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
  import eu.europa.esig.dss.asic.common.*;
 import org.controlsfx.tools.Utils;
+import ro.client_sign_app.clientapp.Signatures.Post_SignatureValue;
 // -----------
 
 
@@ -93,86 +96,39 @@ public class MainController {
     @FXML
     private void getSignatureAction(ActionEvent event) {
 
-        try {
-            String certPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1.crt";
-            FileInputStream fileInputStream = new FileInputStream(certPath);
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            X509Certificate signingCertificate = (X509Certificate) certificateFactory.generateCertificate(fileInputStream);
-            CertificateToken signingCert = new CertificateToken(signingCertificate);
+        // select params
 
-            DSSDocument documentToBeSigned = new FileDocument(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml"));
+        // init asic-s with xades
 
-            ASiCWithXAdESSignatureParameters parameters = new ASiCWithXAdESSignatureParameters();
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
-            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
-            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+        String certPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1.crt";
+        String docPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml";
+        String outPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test2.zip";
+        String outPath2 = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test3.zip";
 
-            parameters.setSigningCertificate(signingCert);
-            //parameters.setCertificateChain(signingCert);
+        SignatureLevel signatureLevel = SignatureLevel.XAdES_BASELINE_B;
+        DigestAlgorithm digestAlgorithm = DigestAlgorithm.SHA256;
 
-            CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
-            ASiCWithXAdESService service = new ASiCWithXAdESService(commonCertificateVerifier);
-            ToBeSigned dataToSign = service.getDataToSign(documentToBeSigned, parameters);
-            DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
+        ASiC_SwithXAdES signatureCreator = new ASiC_SwithXAdES();
+        ToBeSigned toBeSigned = signatureCreator.doASiC_SwithXAdESsignature(certPath,docPath,signatureLevel,digestAlgorithm);
 
+        // post
+        String credentialID = "CX000001";
+        String signAlgo = "sha256withRSA";
+        String digestAlgo = "sha256";
+        SignatureValue signatureValue = Post_SignatureValue.requestSignatureValue(signHashUrl,authToken,toBeSigned.getBytes(),credentialID,signAlgo,digestAlgo);
 
-            URL obj = new URL(signHashUrl);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+        // integrate
+        boolean verifySignature = signatureCreator.integrateSignature(signatureValue, outPath);
 
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", "Basic " + authToken);
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
+        // CADES TEST
+        SignatureLevel signatureLevel1 = SignatureLevel.CAdES_BASELINE_B;
+        DigestAlgorithm digestAlgorithm1 = DigestAlgorithm.SHA256;
 
-            // CREATE AND SEND JSON MESSAGE
-            PostParams postParams = new PostParams();
-            postParams.setCredID("CX000001");
-            postParams.setSignAlgo("sha256withRSA");
-            postParams.setDigestAlgo("sha256");
-            postParams.setHashToBeSigned(Base64.getEncoder().encodeToString(dataToSign.getBytes()));
+        ASiC_SwithCAdES signatureCreator1 = new ASiC_SwithCAdES();
+        ToBeSigned toBeSigned1 = signatureCreator1.doASiC_SwithCAdESsignature(certPath,docPath,signatureLevel1,digestAlgorithm1);
 
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String json = ow.writeValueAsString(postParams);
-
-            try(OutputStream os = connection.getOutputStream()) {
-                byte[] input = json.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode != 200) {
-                UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
-                return;
-            }
-
-            SignatureValue signatureValue = new SignatureValue();
-            try(BufferedReader br = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
-                StringBuilder response = new StringBuilder();
-                String responseLine = null;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine.trim());
-                }
-
-                byte[] decodedSignature = Base64.getDecoder().decode(response.toString());
-                signatureValue.setAlgorithm(SignatureAlgorithm.RSA_SHA256);
-                signatureValue.setValue(decodedSignature);
-                //signatureValue = new SignatureValue();
-                //signatureValue.setValue(decodedSignature);
-                //signatureValue.setValue(decodedSignature);
-                //System.out.println(response.toString());
-            }
-
-            DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
-
-            try (OutputStream out = new FileOutputStream("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test2.zip")) {
-                signedDoc.writeTo(out);
-            }
-
-        }
-        catch (IOException | CertificateException e) {
-            e.printStackTrace();
-        }
+        SignatureValue signatureValue1 = Post_SignatureValue.requestSignatureValue(signHashUrl,authToken,toBeSigned1.getBytes(),credentialID,signAlgo,digestAlgo);
+        boolean verifySignature1 = signatureCreator1.integrateSignature(signatureValue1, outPath2);
 
     }
 }
