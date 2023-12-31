@@ -1,5 +1,6 @@
 package ro.client_sign_app.clientapp.Controller;
 import ro.client_sign_app.clientapp.Signatures.ASiC_SwithCAdES;
+import ro.client_sign_app.clientapp.Signatures.ASiC_SwithTST;
 import ro.client_sign_app.clientapp.Signatures.ASiC_SwithXAdES;
 
 import eu.europa.esig.dss.enumerations.*;
@@ -104,6 +105,7 @@ public class MainController {
         String docPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml";
         String outPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test2.zip";
         String outPath2 = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test3.zip";
+        String outPath3 = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test4.zip";
 
         SignatureLevel signatureLevel = SignatureLevel.XAdES_BASELINE_B;
         DigestAlgorithm digestAlgorithm = DigestAlgorithm.SHA256;
@@ -129,6 +131,11 @@ public class MainController {
 
         SignatureValue signatureValue1 = Post_SignatureValue.requestSignatureValue(signHashUrl,authToken,toBeSigned1.getBytes(),credentialID,signAlgo,digestAlgo);
         boolean verifySignature1 = signatureCreator1.integrateSignature(signatureValue1, outPath2);
+
+        // ASIC Timestamp TEST
+
+        ASiC_SwithTST timestamp1 = new ASiC_SwithTST();
+        timestamp1.doASiC_SwithTimestamp(certPath,docPath,outPath3);
 
     }
 }

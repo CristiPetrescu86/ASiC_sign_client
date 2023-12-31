@@ -31,30 +31,6 @@
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-model:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-enumerations:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-xades:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-document:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-spi:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-crl-parser:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk18on:1.72" level="project" />
-    <orderEntry type="library" name="Maven: org.bouncycastle:bcpkix-jdk18on:1.72" level="project" />
-    <orderEntry type="library" name="Maven: org.bouncycastle:bcutil-jdk18on:1.72" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:validation-policy:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-policy-jaxb:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-jaxb-parsers:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-jaxb-common:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-alert:5.12.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.3.8" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:txw2:2.3.8" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.istack:istack-commons-runtime:3.0.12" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.activation:jakarta.activation:1.2.2" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-diagnostic-jaxb:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-simple-report-jaxb:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-simple-certificate-report-jaxb:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-detailed-report-jaxb:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-validation-report:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-xmldsig:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-xades:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-trusted-list:5.12.1" level="project" />
-    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-i18n:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.santuario:xmlsec:2.3.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.fasterxml.woodstox:woodstox-core:6.5.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.woodstox:stax2-api:4.2.1" level="project" />
@@ -74,5 +50,39 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.15.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.15.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.15.2" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-spi:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-crl-parser:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk18on:1.72" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcpkix-jdk18on:1.72" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcutil-jdk18on:1.72" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-timestamp-remote-rest-client:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-timestamp-dto:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-common-remote-dto:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: jakarta.ws.rs:jakarta.ws.rs-api:2.1.6" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-service:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents.client5:httpclient5:5.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents.core5:httpcore5:5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents.core5:httpcore5-h2:5.2" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-timestamp-remote-rest:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-timestamp-remote:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-document:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:validation-policy:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-policy-jaxb:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-jaxb-parsers:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-jaxb-common:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-alert:5.12.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.3.8" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:txw2:2.3.8" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.istack:istack-commons-runtime:3.0.12" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.activation:jakarta.activation:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-diagnostic-jaxb:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-simple-report-jaxb:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-simple-certificate-report-jaxb:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-detailed-report-jaxb:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-validation-report:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-xmldsig:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-xades:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-trusted-list:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-i18n:5.12.1" level="project" />
   </component>
 </module>
