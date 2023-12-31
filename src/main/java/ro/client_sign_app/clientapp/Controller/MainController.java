@@ -92,77 +92,6 @@ public class MainController {
 
     @FXML
     private void getSignatureAction(ActionEvent event) {
-        // D:\Facultate\Master\Dizertatie\Part2\TEST_SEMNATURI\xmlFile1.xml
-
-        /*try (Pkcs12SignatureToken token = new Pkcs12SignatureToken("D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1_keystore.p12", new KeyStore.PasswordProtection("123456".toCharArray()))) {
-
-            DSSDocument documentToBeSigned = new FileDocument(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml"));
-
-            ASiCWithXAdESSignatureParameters parameters = new ASiCWithXAdESSignatureParameters();
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
-            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
-            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
-
-            List<DSSPrivateKeyEntry> keys = token.getKeys();
-            DSSPrivateKeyEntry signingKey = keys.get(0);
-
-            parameters.setSigningCertificate(signingKey.getCertificate());
-            parameters.setCertificateChain(signingKey.getCertificateChain());
-
-            CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
-            ASiCWithXAdESService service = new ASiCWithXAdESService(commonCertificateVerifier);
-            ToBeSigned dataToSign = service.getDataToSign(documentToBeSigned, parameters);
-
-            DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
-            SignatureValue signatureValue = token.sign(dataToSign,digestAlgorithm,signingKey);
-
-            DSSDocument signedDoc = service.signDocument(documentToBeSigned,parameters,signatureValue);
-
-            try (OutputStream out = new FileOutputStream( "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED.zip"))
-            {
-                signedDoc.writeTo(out);
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        /*    TEST REMOTE BUT LOCAL
-        String certPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1.crt";
-        try (FileInputStream fileInputStream = new FileInputStream(certPath)) {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            X509Certificate signingCertificate = (X509Certificate) certificateFactory.generateCertificate(fileInputStream);
-            CertificateToken signingCert = new CertificateToken(signingCertificate);
-
-            DSSDocument documentToBeSigned = new FileDocument(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml"));
-
-            ASiCWithXAdESSignatureParameters parameters = new ASiCWithXAdESSignatureParameters();
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
-            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
-            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
-
-            parameters.setSigningCertificate(signingCert);
-            //parameters.setCertificateChain(signingCert);
-
-            CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
-            ASiCWithXAdESService service = new ASiCWithXAdESService(commonCertificateVerifier);
-            ToBeSigned dataToSign = service.getDataToSign(documentToBeSigned, parameters);
-            DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
-
-            try (Pkcs12SignatureToken token = new Pkcs12SignatureToken("D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1_keystore.p12", new KeyStore.PasswordProtection("123456".toCharArray()))) {
-                List<DSSPrivateKeyEntry> keys = token.getKeys();
-                DSSPrivateKeyEntry signingKey = keys.get(0);
-                SignatureValue signatureValue = token.sign(dataToSign, digestAlgorithm, signingKey);
-
-                DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
-
-                try (OutputStream out = new FileOutputStream("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test.zip")) {
-                    signedDoc.writeTo(out);
-                }
-            }
-
-        } catch (IOException | CertificateException e) {
-            e.printStackTrace();
-        }*/
 
         try {
             String certPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\keystore\\user1.crt";
@@ -200,7 +129,7 @@ public class MainController {
             postParams.setCredID("CX000001");
             postParams.setSignAlgo("sha256withRSA");
             postParams.setDigestAlgo("sha256");
-            postParams.setHashToBeSigned(dataToSign.toString());
+            postParams.setHashToBeSigned(Base64.getEncoder().encodeToString(dataToSign.getBytes()));
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(postParams);
@@ -239,8 +168,6 @@ public class MainController {
             try (OutputStream out = new FileOutputStream("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test2.zip")) {
                 signedDoc.writeTo(out);
             }
-
-
 
         }
         catch (IOException | CertificateException e) {
