@@ -1,7 +1,5 @@
 package ro.client_sign_app.clientapp.Controller;
-import ro.client_sign_app.clientapp.Signatures.ASiC_SwithCAdES;
-import ro.client_sign_app.clientapp.Signatures.ASiC_SwithTST;
-import ro.client_sign_app.clientapp.Signatures.ASiC_SwithXAdES;
+import ro.client_sign_app.clientapp.Signatures.*;
 
 import eu.europa.esig.dss.enumerations.*;
 import eu.europa.esig.dss.model.*;
@@ -20,7 +18,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -37,15 +37,19 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
  import eu.europa.esig.dss.asic.common.*;
 import org.controlsfx.tools.Utils;
-import ro.client_sign_app.clientapp.Signatures.Post_SignatureValue;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 // -----------
 
 
 
 public class MainController {
 
-    private String getCertUrl = "http://localhost:8080/api/getCert";
-    private String signHashUrl = "http://localhost:8080/api/signHash";
+    private String getCertUrl = "https://localhost:8080/api/getCert";
+    private String signHashUrl = "https://localhost:8080/api/signHash";
 
     private String authToken;
 
@@ -56,8 +60,26 @@ public class MainController {
     @FXML
     private void getCertAction(ActionEvent event) {
         try {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+                        public void checkClientTrusted(
+                                java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                        public void checkServerTrusted(
+                                java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
+
             URL obj = new URL(getCertUrl);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            connection.setSSLSocketFactory(sc.getSocketFactory());
 
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Authorization", "Basic " + authToken);
@@ -84,7 +106,7 @@ public class MainController {
                 e.printStackTrace();
             }
 
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
         }
     }
@@ -106,6 +128,7 @@ public class MainController {
         String outPath = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test2.zip";
         String outPath2 = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test3.zip";
         String outPath3 = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1SIGNED_test4.zip";
+
 
         SignatureLevel signatureLevel = SignatureLevel.XAdES_BASELINE_B;
         DigestAlgorithm digestAlgorithm = DigestAlgorithm.SHA256;
@@ -135,7 +158,33 @@ public class MainController {
         // ASIC Timestamp TEST
 
         ASiC_SwithTST timestamp1 = new ASiC_SwithTST();
-        timestamp1.doASiC_SwithTimestamp(certPath,docPath,outPath3);
+        timestamp1.doASiC_SwithTimestamp(docPath,outPath3);
+
+        // ASIC-E with XAdES
+
+        List<String> docPath_3 = List.of(new String[]{"D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml","D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile2.xml","D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile3.xml"});
+        String outPath4 = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\asiceXADES_test1.zip";
+
+        ASiC_EwithXAdES signatureCreator2 = new ASiC_EwithXAdES();
+        ToBeSigned toBeSigned2 = signatureCreator2.doSignature(certPath,docPath_3,signatureLevel,digestAlgorithm);
+        SignatureValue signatureValue2 = Post_SignatureValue.requestSignatureValue(signHashUrl,authToken,toBeSigned2.getBytes(),credentialID,signAlgo,digestAlgo);
+        boolean verifySignature2 = signatureCreator2.integrateSignature(signatureValue2,outPath4);
+
+        // ASIC-E with CAdES
+
+        List<String> docPath_4 = List.of(new String[]{"D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\xmlFile1.xml","D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\Bitcoin.pdf","D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\pict1.jpg"});
+        String outPath5 = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\asiceCADES_test1.zip";
+        ASiC_EwithCAdES signatureCreator3 = new ASiC_EwithCAdES();
+        ToBeSigned toBeSigned3 = signatureCreator3.doSignature(certPath,docPath_4,signatureLevel1,digestAlgorithm1);
+        SignatureValue signatureValue3 = Post_SignatureValue.requestSignatureValue(signHashUrl,authToken,toBeSigned3.getBytes(),credentialID,signAlgo,digestAlgo);
+        boolean verifySignature3 = signatureCreator3.integrateSignature(signatureValue3,outPath5);
+
+
+        // ASIC-E with timestamp
+
+        String outPath6 = "D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\asiceTST_test1.zip";
+        ASiC_EwithTST timestamp2 = new ASiC_EwithTST();
+        timestamp2.doTimeAssertion(docPath_4,outPath6);
 
     }
 }

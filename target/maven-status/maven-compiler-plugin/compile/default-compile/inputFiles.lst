@@ -1,6 +1,13 @@
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\MainController.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\PostParams.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\Post_SignatureValue.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\ASiC_SwithCAdES.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\ASiC_EwithXAdES.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\UtilsClass.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\ASiC_SwithTST.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\LoginController.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\ASiC_EwithTST.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\module-info.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\LoginPage.java
-D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\UtilsClass.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\ASiC_EwithCAdES.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\ASiC_SwithXAdES.java

@@ -16,12 +16,19 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.controlsfx.tools.Utils;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class LoginController {
 
@@ -31,7 +38,7 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
 
-    private String loginURL = "http://localhost:8080/api/login";
+    private String loginURL = "https://localhost:8080/api/login";
     private static String successLogin = "Authentication successful";
 
     private Stage stage1;
@@ -55,8 +62,26 @@ public class LoginController {
         String base64CredEncoded = UtilsClass.base64CredEncoder(username, password);
 
         try {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+                        public void checkClientTrusted(
+                                java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                        public void checkServerTrusted(
+                                java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
+
             URL obj = new URL(loginURL);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            connection.setSSLSocketFactory(sc.getSocketFactory());
 
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Authorization", "Basic " + base64CredEncoded);
@@ -91,7 +116,7 @@ public class LoginController {
                 final Stage stage2 = (Stage) source.getScene().getWindow();
                 stage2.close();
             }
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
         }
 
