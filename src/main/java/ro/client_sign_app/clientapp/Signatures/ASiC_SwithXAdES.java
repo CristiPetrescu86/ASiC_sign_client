@@ -32,7 +32,7 @@ public class ASiC_SwithXAdES {
         service = new ASiCWithXAdESService(commonCertificateVerifier);
     }
 
-    public ToBeSigned doASiC_SwithXAdESsignature(String certPath,String docPath, SignatureLevel signatureLevel,DigestAlgorithm digestAlgorithm)
+    public ToBeSigned doSignature(String certPath,String docPath, SignatureLevel signatureLevel,DigestAlgorithm digestAlgorithm)
     {
         try {
             FileInputStream fileInputStream = new FileInputStream(certPath);
@@ -57,19 +57,10 @@ public class ASiC_SwithXAdES {
         }
     }
 
-    public boolean integrateSignature(SignatureValue signatureValue, String outFilePath)
+    public DSSDocument integrateSignature(SignatureValue signatureValue)
     {
         DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
-
-        try (OutputStream out = new FileOutputStream(outFilePath)) {
-            signedDoc.writeTo(out);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
+        return signedDoc;
     }
 
 }

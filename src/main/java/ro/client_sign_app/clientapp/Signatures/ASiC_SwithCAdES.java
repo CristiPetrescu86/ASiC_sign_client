@@ -31,7 +31,7 @@ public class ASiC_SwithCAdES {
         service = new ASiCWithCAdESService(commonCertificateVerifier);
     }
 
-    public ToBeSigned doASiC_SwithCAdESsignature(String certPath, String docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm) {
+    public ToBeSigned doSignature(String certPath, String docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm) {
         try {
             FileInputStream fileInputStream = new FileInputStream(certPath);
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");

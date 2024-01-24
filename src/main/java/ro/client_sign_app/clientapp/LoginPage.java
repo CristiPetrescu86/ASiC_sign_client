@@ -13,7 +13,7 @@ public class LoginPage extends Application {
     public void start(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("login-view.fxml"));
         primaryStage.setTitle("Login Page");
-        primaryStage.setScene(new Scene(root, 300, 200));
+        primaryStage.setScene(new Scene(root, 650, 350));
         primaryStage.show();
     }
 

@@ -38,7 +38,7 @@ public class ASiC_SwithTST {
         service = new ASiCWithCAdESService(commonCertificateVerifier);
     }
 
-    public boolean doASiC_SwithTimestamp(String docPath, String outFilePath) {
+    public boolean doTimeAssertion(String docPath, String outFilePath) {
         try {
 
             documentToBeSigned = new FileDocument(new File(docPath));
