@@ -10,6 +10,8 @@ import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
+import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 
 import java.io.*;
@@ -48,6 +50,14 @@ public class ASiC_SwithXAdES {
 
             parameters.setSigningCertificate(signingCert);
             //parameters.setCertificateChain(signingCert);
+
+            // Timestamp
+            if (signatureLevel == SignatureLevel.XAdES_BASELINE_T){
+                final String tspServer = "http://timestamp.digicert.com";
+                OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
+                tspSource.setDataLoader(new TimestampDataLoader());
+                service.setTspSource(tspSource);
+            }
 
             return service.getDataToSign(documentToBeSigned, parameters);
         }

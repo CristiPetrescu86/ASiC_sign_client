@@ -10,6 +10,8 @@ import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
+import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 
 import java.io.*;
@@ -47,6 +49,14 @@ public class ASiC_SwithCAdES {
             parameters.setSigningCertificate(signingCert);
             //parameters.setCertificateChain(signingCert);
 
+            // Timestamp
+            if (signatureLevel == SignatureLevel.CAdES_BASELINE_T){
+                final String tspServer = "http://timestamp.digicert.com";
+                OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
+                tspSource.setDataLoader(new TimestampDataLoader());
+                service.setTspSource(tspSource);
+            }
+
             return service.getDataToSign(documentToBeSigned, parameters);
         }
         catch (IOException | CertificateException e) {
@@ -55,18 +65,9 @@ public class ASiC_SwithCAdES {
         }
     }
 
-    public boolean integrateSignature(SignatureValue signatureValue, String outFilePath)
+    public DSSDocument integrateSignature(SignatureValue signatureValue)
     {
         DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
-
-        try (OutputStream out = new FileOutputStream(outFilePath)) {
-            signedDoc.writeTo(out);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
+        return signedDoc;
     }
 }

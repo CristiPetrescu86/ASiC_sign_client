@@ -38,29 +38,17 @@ public class ASiC_SwithTST {
         service = new ASiCWithCAdESService(commonCertificateVerifier);
     }
 
-    public boolean doTimeAssertion(String docPath, String outFilePath) {
-        try {
+    public DSSDocument doTimeAssertion(String docPath) {
+        documentToBeSigned = new FileDocument(new File(docPath));
+        final String tspServer = "http://timestamp.digicert.com";
+        OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
+        tspSource.setDataLoader(new TimestampDataLoader());
 
-            documentToBeSigned = new FileDocument(new File(docPath));
-            final String tspServer = "http://timestamp.digicert.com";
-            OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
-            tspSource.setDataLoader(new TimestampDataLoader());
+        service.setTspSource(tspSource);
+        timestampingParameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
 
-            service.setTspSource(tspSource);
-            timestampingParameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
-
-            DSSDocument timestampedDoc = service.timestamp(documentToBeSigned, timestampingParameters);
-
-            try (OutputStream out = new FileOutputStream(outFilePath)) {
-                timestampedDoc.writeTo(out);
-            }
-
-            return true;
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        DSSDocument timestampedDoc = service.timestamp(documentToBeSigned, timestampingParameters);
+        return timestampedDoc;
     }
 
 }

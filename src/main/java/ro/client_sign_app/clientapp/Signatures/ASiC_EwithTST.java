@@ -30,8 +30,7 @@ public class ASiC_EwithTST {
         documentsToBeSigned = new ArrayList<>();
     }
 
-    public boolean doTimeAssertion(List<String> docPath, String outFilePath) {
-        try {
+    public DSSDocument doTimeAssertion(List<String> docPath) {
             for (String doc : docPath)
                 documentsToBeSigned.add(new FileDocument(doc));
 
@@ -43,16 +42,6 @@ public class ASiC_EwithTST {
             timestampingParameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
 
             DSSDocument timestampedDoc = service.timestamp(documentsToBeSigned, timestampingParameters);
-
-            try (OutputStream out = new FileOutputStream(outFilePath)) {
-                timestampedDoc.writeTo(out);
-            }
-
-            return true;
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+            return timestampedDoc;
     }
 }
