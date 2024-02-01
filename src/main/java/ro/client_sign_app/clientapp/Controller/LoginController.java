@@ -8,13 +8,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -24,11 +21,16 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.controlsfx.tools.Utils;
+import javafx.scene.web.WebView;
+import javafx.scene.web.WebEngine;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ro.client_sign_app.clientapp.CSCLibrary.CSC_controller;
+import ro.client_sign_app.clientapp.CSCLibrary.Oauth2_token_req;
 
 public class LoginController {
 
@@ -119,9 +121,70 @@ public class LoginController {
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
         }
-
     }
 
+
+    @FXML
+    private void loginCSCAction(ActionEvent event) {
+
+        Stage webViewStage = new Stage();
+        WebView webView = new WebView();
+        webViewStage.setScene(new Scene(webView, 900, 600));
+        //webView.getEngine().load("https://google.com");
+        webView.getEngine().load("https://rssdemo.certsign.ro/WSN.AuthorizationService_01/oauth2/authorize?client_id=81ac496c-3ab8-4e9d-bbe3-cf8ccc37f65c&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&culture=en&scope=service");
+
+        WebEngine webEngine = webView.getEngine();
+        webEngine.locationProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains("http://localhost:8080"))
+            {
+                try {
+                    URI uri = new URI(newValue);
+                    String query = uri.getQuery();
+                    String[] params = query.split("&");
+
+                    for (String param : params) {
+                        String[] keyValue = param.split("=");
+                        if (keyValue.length == 2 && keyValue[0].equals("code")) {
+                            String codeValue = keyValue[1];
+
+                            Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
+                            String authToken = CSC_controller.oauth2_token(jsonBody);
+                            if(authToken != null) {
+
+                                try {
+                                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/ro/client_sign_app/clientapp/main2-view.fxml"));
+                                    stage1 = new Stage();
+                                    stage1.setTitle("Client pentru semnaturi electronice la distanta");
+                                    stage1.setScene(new Scene(loader.load()));
+                                    stage1.show();
+
+                                    Main2Controller mainController = loader.getController();
+                                    mainController.initAuthToken(authToken);
+
+                                    webViewStage.close();
+                                    final Node source = (Node) event.getSource();
+                                    final Stage stage2 = (Stage) source.getScene().getWindow();
+                                    stage2.close();
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        webViewStage.setTitle("Autentificare Oauth2.0");
+        webViewStage.show();
+
+    }
 
 
 }

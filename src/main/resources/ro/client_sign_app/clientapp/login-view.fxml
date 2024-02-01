@@ -24,7 +24,10 @@
     <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
 
     <Button onAction="#loginButtonAction" prefHeight="25.0" prefWidth="96.0" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" text="Login" textFill="#253d5b" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
-     <columnConstraints>
+
+    <Button onAction="#loginCSCAction" prefHeight="27.0" prefWidth="188.0" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" text="Login with CertSIGN" textFill="#253d5b" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+
+    <columnConstraints>
         <ColumnConstraints maxWidth="150.0" minWidth="50.0" prefWidth="63.0" />
         <ColumnConstraints maxWidth="155.0" minWidth="55.0" prefWidth="142.0" />
      </columnConstraints>
@@ -35,5 +38,7 @@
         <RowConstraints />
         <RowConstraints />
         <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
      </rowConstraints>
 </GridPane>

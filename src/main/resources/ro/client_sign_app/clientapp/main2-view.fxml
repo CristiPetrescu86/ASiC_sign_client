@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane alignment="CENTER" hgap="10.0" prefHeight="500.0" prefWidth="700.0" vgap="10.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ro.client_sign_app.clientapp.Controller.Main2Controller">
+
+    <GridPane.margin>
+        <Insets left="40.0" right="40.0" />
+    </GridPane.margin>
+    <ImageView GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+        <image>
+            <Image requestedHeight="50" requestedWidth="50" url="@agreement.png" />
+        </image>
+        <GridPane.margin>
+            <Insets left="40.0" />
+        </GridPane.margin>
+    </ImageView>
+    <Label alignment="CENTER" prefHeight="20.0" prefWidth="82.0" text="Signing App" textAlignment="CENTER" textFill="#253d5b" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font></Label>
+
+    <Button fx:id="getCertButton" onAction="#getCertAction" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" text="Obtine lant certificare" textFill="#253d5b" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+
+
+    <Button fx:id="uploadButton" onAction="#uploadFileAction" prefHeight="25.0" prefWidth="129.0" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" text="Incarca fisiere" textFill="#253d5b" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+
+    <Label alignment="CENTER" text="Credential" textAlignment="CENTER" textFill="#253d5b" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+    <ComboBox fx:id="credID" prefHeight="25.0" prefWidth="132.0" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" value="CX000001" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="6">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="CX000001" />
+                <!--<String fx:value="CX000002" />-->
+            </FXCollections>
+        </items>
+    </ComboBox>
+
+    <Label alignment="CENTER" text="Algoritm semnare" textAlignment="CENTER" textFill="#253d5b" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+    <ComboBox fx:id="signAlgo" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" value="RSAwithSHA256" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="RSAwithSHA256" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+
+    <Label alignment="CENTER" text="Tip container" textAlignment="CENTER" textFill="#253d5b" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
+    <ComboBox fx:id="containerType" prefHeight="25.0" prefWidth="132.0" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" value="ASiC-S" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="8">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="ASiC-S" />
+                <String fx:value="ASiC-E" />
+            </FXCollections>
+        </items>
+        <GridPane.margin>
+            <Insets />
+        </GridPane.margin>
+    </ComboBox>
+
+    <Label alignment="CENTER" text="Nivel semnatura" textAlignment="CENTER" textFill="#253d5b" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
+    <ComboBox fx:id="signLevel" prefHeight="25.0" prefWidth="131.0" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" value="XAdES B-B" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="CAdES B-B" />
+                <String fx:value="CAdES B-T" />
+                <String fx:value="XAdES B-B" />
+                <String fx:value="XAdES B-T" />
+                <String fx:value="Time assertion" />
+            </FXCollections>
+        </items>
+        <GridPane.margin>
+            <Insets />
+        </GridPane.margin>
+    </ComboBox>
+
+    <Button fx:id="getSignatureButton" onAction="#getSignatureAction" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" text="Semneaza documente" textFill="#253d5b" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="11" />
+
+    <columnConstraints>
+        <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+        <ColumnConstraints maxWidth="222.0" minWidth="68.0" prefWidth="101.0" />
+        <ColumnConstraints maxWidth="154.0" minWidth="0.0" prefWidth="125.0" />
+        <ColumnConstraints maxWidth="222.0" minWidth="68.0" prefWidth="97.0" />
+        <ColumnConstraints maxWidth="105.0" minWidth="0.0" prefWidth="0.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints maxHeight="45.0" minHeight="25.0" prefHeight="25.0" />
+        <RowConstraints maxHeight="25.0" minHeight="5.0" prefHeight="25.0" />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+    </rowConstraints>
+
+
+</GridPane>
