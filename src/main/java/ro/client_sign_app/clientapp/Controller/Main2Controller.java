@@ -6,6 +6,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
 import ro.client_sign_app.clientapp.CSCLibrary.CSC_controller;
 import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_req;
+import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_resp;
 import ro.client_sign_app.clientapp.Signatures.*;
 import eu.europa.esig.dss.enumerations.*;
 import eu.europa.esig.dss.model.*;
@@ -13,14 +14,21 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class Main2Controller {
 
     private String authToken;
     private ArrayList<String> filePaths;
     private List<String> credentials;
+    private HashMap<String,String> algoHashMap = new HashMap<String,String>(
+            Map.ofEntries(
+                    new AbstractMap.SimpleEntry<String, String>("1.2.840.113549.1.1.1", "RSA"),
+                    new AbstractMap.SimpleEntry<String, String>("1.2.840.113549.1.1.11", "RSAwithSHA256"),
+                    new AbstractMap.SimpleEntry<String, String>("1.2.840.113549.1.1.13", "RSAwithSHA512")
+            )
+    );
 
 
     void initMainPageToken(String token) {
@@ -44,38 +52,20 @@ public class Main2Controller {
     @FXML
     private void credInfoForKey(ActionEvent event) {
         String selectedValue = credID.getValue();
-        // EXECUTE CRED INFO AND GET CERTIFICATE CHAIN
         Cred_info_req credInfoObj = new Cred_info_req(selectedValue,"chain",true,true,"ro");
-        CSC_controller.credentials_info(authToken,credInfoObj);
-    }
+        Cred_info_resp keyInfo = CSC_controller.credentials_info(authToken,credInfoObj);
+        if(keyInfo == null){
+            UtilsClass.infoBox("Eroare server", "Eroare", null);
+            return;
+        }
 
-
-    @FXML
-    private void getCertAction(ActionEvent event) {
-//        String signingCert = Get_SigningCert.requestSignatureValue(getCertUrl,authToken);
-//
-//        FileChooser fileChooser = new FileChooser();
-//        fileChooser.setTitle("Salveaza fisier");
-//        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Certificate file (*.crt)", "*.crt");
-//        fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\Certificate_Client"));
-//        fileChooser.getExtensionFilters().add(extFilter);
-//        File file = fileChooser.showSaveDialog(stage);
-//
-//        if(signingCert == null)
-//        {
-//            UtilsClass.infoBox("Eroare server", "Eroare", null);
-//            return;
-//        }
-//
-//        try {
-//            FileWriter writer = new FileWriter(file);
-//            writer.write(signingCert);
-//            writer.close();
-//        } catch (IOException e) {
-//            UtilsClass.infoBox("Eroare de salvare a fisierului", "Error", null);
-//            e.printStackTrace();
-//        }
-
+        ObservableList<String> data = FXCollections.observableArrayList();
+        for(String algoSupported : keyInfo.getKey().getAlgo()){
+            String foundSupportedAlgo = algoHashMap.get(algoSupported);
+            if(foundSupportedAlgo != null)
+                data.add(foundSupportedAlgo);
+        }
+        signAlgo.setItems(data);
     }
 
     @FXML

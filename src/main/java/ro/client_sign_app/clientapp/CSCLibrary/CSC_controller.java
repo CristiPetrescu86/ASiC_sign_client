@@ -107,7 +107,7 @@ public class CSC_controller {
     }
 
 
-    public static List<String> credentials_info(String authToken, Cred_info_req credInfoObj){
+    public static Cred_info_resp credentials_info(String authToken, Cred_info_req credInfoObj){
         try {
             URL obj = new URL(get_info_url);
             HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
@@ -139,12 +139,10 @@ public class CSC_controller {
                     response.append(responseLine.trim());
                 }
 
-                System.out.println(response.toString());
+                ObjectMapper objectMapper = new ObjectMapper();
+                Cred_info_resp credentialInfo = objectMapper.readValue(response.toString(), Cred_info_resp.class);
 
-                //ObjectMapper objectMapper = new ObjectMapper();
-                //Cred_list_resp myDataFromJson = objectMapper.readValue(response.toString(), Cred_list_resp.class);
-
-                return null;
+                return credentialInfo;
             }
         } catch (IOException e) {
             e.printStackTrace();

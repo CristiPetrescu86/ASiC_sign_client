@@ -34,12 +34,7 @@
     </ComboBox>
 
     <Label alignment="CENTER" text="Algoritm semnare" textAlignment="CENTER" textFill="#253d5b" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
-    <ComboBox fx:id="signAlgo" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" value="RSAwithSHA256" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="6">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="RSAwithSHA256" />
-            </FXCollections>
-        </items>
+    <ComboBox fx:id="signAlgo" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="6">
     </ComboBox>
 
     <Label alignment="CENTER" text="Tip container" textAlignment="CENTER" textFill="#253d5b" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
