@@ -3,11 +3,11 @@ package ro.client_sign_app.clientapp.CSCLibrary;
 public class Cred_info_req {
     private String credentialID;
     private String certificates;
-    private String certInfo;
-    private String authInfo;
+    private boolean certInfo;
+    private boolean authInfo;
     private String lang;
 
-    public Cred_info_req(String credentialID, String certificates, String certInfo, String authInfo, String lang) {
+    public Cred_info_req(String credentialID, String certificates, boolean certInfo, boolean authInfo, String lang) {
         this.credentialID = credentialID;
         this.certificates = certificates;
         this.certInfo = certInfo;
@@ -31,19 +31,19 @@ public class Cred_info_req {
         this.certificates = certificates;
     }
 
-    public String getCertInfo() {
+    public boolean getCertInfo() {
         return certInfo;
     }
 
-    public void setCertInfo(String certInfo) {
+    public void setCertInfo(boolean certInfo) {
         this.certInfo = certInfo;
     }
 
-    public String getAuthInfo() {
+    public boolean getAuthInfo() {
         return authInfo;
     }
 
-    public void setAuthInfo(String authInfo) {
+    public void setAuthInfo(boolean authInfo) {
         this.authInfo = authInfo;
     }
 

@@ -8,6 +8,7 @@ ro\client_sign_app\clientapp\Signatures\ASiC_EwithXAdES.class
 ro\client_sign_app\clientapp\Controller\UtilsClass.class
 ro\client_sign_app\clientapp\CSCLibrary\sign_signHash_resp.class
 ro\client_sign_app\clientapp\Signatures\Get_SigningCert.class
+ro\client_sign_app\clientapp\CSCLibrary\Cred_list_resp.class
 ro\client_sign_app\clientapp\Signatures\Get_SigningCert$1.class
 ro\client_sign_app\clientapp\CSCLibrary\CSC_controller.class
 ro\client_sign_app\clientapp\Signatures\ASiC_EwithCAdES.class

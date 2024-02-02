@@ -12,15 +12,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.application.Platform;
+
 import javafx.stage.Stage;
-import org.controlsfx.tools.Utils;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
@@ -28,7 +23,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ro.client_sign_app.clientapp.CSCLibrary.CSC_controller;
 import ro.client_sign_app.clientapp.CSCLibrary.Oauth2_token_req;
 
@@ -159,7 +154,7 @@ public class LoginController {
                                     stage1.show();
 
                                     Main2Controller mainController = loader.getController();
-                                    mainController.initAuthToken(authToken);
+                                    mainController.initMainPageToken(authToken);
 
                                     webViewStage.close();
                                     final Node source = (Node) event.getSource();
