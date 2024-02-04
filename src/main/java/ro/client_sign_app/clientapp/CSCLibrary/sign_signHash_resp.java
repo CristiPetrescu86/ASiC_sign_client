@@ -1,5 +1,8 @@
 package ro.client_sign_app.clientapp.CSCLibrary;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class sign_signHash_resp {
@@ -9,11 +12,12 @@ public class sign_signHash_resp {
         return signatures;
     }
 
+    @JsonSetter("signatures")
     public void setSignatures(List<String> signatures) {
         this.signatures = signatures;
     }
 
-    public sign_signHash_resp(List<String> signatures) {
-        this.signatures = signatures;
+    public sign_signHash_resp() {
+        this.signatures = new ArrayList<>();
     }
 }

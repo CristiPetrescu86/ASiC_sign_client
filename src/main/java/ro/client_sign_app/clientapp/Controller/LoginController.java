@@ -176,7 +176,7 @@ public class LoginController {
             }
         });
 
-        webViewStage.setTitle("Autentificare Oauth2.0");
+        webViewStage.setTitle("Autentificare autentificare cont");
         webViewStage.show();
 
     }

@@ -30,5 +30,10 @@ public class UtilsClass {
             return null;
         }
     }
+
+    public static String computeAuthorizeLink(String credentialID, String hash){
+        return "https://rssdemo.certsign.ro/WSN.AuthorizationService_01/oauth2/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&culture=en&scope=credential&numSignatures=1&client_id=81ac496c-3ab8-4e9d-bbe3-cf8ccc37f65c&credentialID="
+                + credentialID + "&hash=" + hash;
+    }
 }
 

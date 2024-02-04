@@ -13,6 +13,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class CSC_controller {
     private static String url = "https://rssdemo.certsign.ro/WSN.AuthorizationService_01/oauth2/token";
     private static String get_cred_url = "https://rssdemo.certsign.ro/CSC.ApiService_01/csc/v1/credentials/list";
     private static String get_info_url = "https://rssdemo.certsign.ro/CSC.ApiService_01/csc/v1/credentials/info";
+    private static String get_sign_url = "https://rssdemo.certsign.ro/CSC.ApiService_01/csc/v1/signatures/signHash";
 
     public static String oauth2_token(Oauth2_token_req body) {
 
@@ -143,6 +145,53 @@ public class CSC_controller {
                 Cred_info_resp credentialInfo = objectMapper.readValue(response.toString(), Cred_info_resp.class);
 
                 return credentialInfo;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<String> signatures_signHash(String authToken, String credentialID, String hash, String signAlgo, String SAD){
+        List<String> hashList = new ArrayList<>();
+        hashList.add(hash);
+        Sign_signHash_req signHashObj = new Sign_signHash_req(credentialID,hashList,signAlgo,SAD);
+
+        try {
+            URL obj = new URL(get_sign_url);
+            HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Authorization", "Bearer " + authToken);
+
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(signHashObj);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = json.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200) {
+                UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                return null;
+            }
+
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine = null;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                sign_signHash_resp resultHashes = objectMapper.readValue(response.toString(), sign_signHash_resp.class);
+
+                return resultHashes.getSignatures();
             }
         } catch (IOException e) {
             e.printStackTrace();
