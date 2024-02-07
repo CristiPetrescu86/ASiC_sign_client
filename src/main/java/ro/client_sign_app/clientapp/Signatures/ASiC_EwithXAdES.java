@@ -4,6 +4,7 @@ import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
@@ -13,12 +14,14 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
+import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_resp;
 
 import java.io.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class ASiC_EwithXAdES {
@@ -73,6 +76,62 @@ public class ASiC_EwithXAdES {
 
     public DSSDocument integrateSignature(SignatureValue signatureValue)
     {
+        DSSDocument signedDoc = service.signDocument(documentsToBeSigned, parameters, signatureValue);
+        return signedDoc;
+    }
+
+    public ToBeSigned doSignatureCSC(List<String> docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm, Cred_info_resp keyInfo)
+    {
+        try{
+            byte[] decodedBytes = Base64.getDecoder().decode(keyInfo.getCert().getCertificates().get(0).replace("\n", ""));
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(decodedBytes);
+            X509Certificate signingCertificate = (X509Certificate) certificateFactory.generateCertificate(byteArrayInputStream);
+            CertificateToken signingCert = new CertificateToken(signingCertificate);
+
+            for (String doc : docPath)
+                documentsToBeSigned.add(new FileDocument(doc));
+
+            parameters.setSignatureLevel(signatureLevel);
+            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
+            parameters.setDigestAlgorithm(digestAlgorithm);
+
+            parameters.setSigningCertificate(signingCert);
+
+            List<CertificateToken> certificateChainList = new ArrayList<>();
+            for(int i = 1; i < keyInfo.getCert().getCertificates().size(); i++) {
+                byte[] decodedCert = Base64.getDecoder().decode(keyInfo.getCert().getCertificates().get(i).replace("\n", ""));
+                CertificateFactory certificateChainFactory = CertificateFactory.getInstance("X.509");
+                ByteArrayInputStream decodedCertArrayInputStream = new ByteArrayInputStream(decodedCert);
+                X509Certificate someCert = (X509Certificate) certificateChainFactory.generateCertificate(decodedCertArrayInputStream);
+                CertificateToken someCertAux = new CertificateToken(someCert);
+                certificateChainList.add(someCertAux);
+            }
+            parameters.setCertificateChain(certificateChainList);
+
+            // Timestamp
+            if (signatureLevel == SignatureLevel.XAdES_BASELINE_T){
+                final String tspServer = "http://timestamp.digicert.com";
+                OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
+                tspSource.setDataLoader(new TimestampDataLoader());
+                service.setTspSource(tspSource);
+            }
+
+            return service.getDataToSign(documentsToBeSigned, parameters);
+
+        } catch (CertificateException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public DSSDocument integrateSignatureCSC(String signedHash, SignatureAlgorithm SignAlgo)
+    {
+        SignatureValue signatureValue = new SignatureValue();
+        byte[] decodedSignature = Base64.getDecoder().decode(signedHash);
+        signatureValue.setAlgorithm(SignAlgo);
+        signatureValue.setValue(decodedSignature);
+
         DSSDocument signedDoc = service.signDocument(documentsToBeSigned, parameters, signatureValue);
         return signedDoc;
     }

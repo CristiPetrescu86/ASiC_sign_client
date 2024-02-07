@@ -260,39 +260,200 @@ public class Main2Controller {
             webViewStage.setTitle("Autorizare cheie privata");
             webViewStage.show();
         }
-//        else if(containerTypeValue.equals("ASiC-E") && (signLevelValue.equals("XAdES B-B") || signLevelValue.equals("XAdES B-T"))){
-//            ASiC_EwithXAdES signatureCreator = new ASiC_EwithXAdES();
-//            ToBeSigned toBeSigned = signatureCreator.doSignature(certPath,filePaths,signatureLevel,digestAlgorithm);
-//            SignatureValue signatureValue = Post_SignatureValue.requestSignatureValue(signHashUrl,authToken,toBeSigned.getBytes(),credIDValue,signAlgo,digestAlgo);
-//            DSSDocument signedDocument = signatureCreator.integrateSignature(signatureValue);
-//            saveFile(signedDocument);
-//        }
-//        else if(containerTypeValue.equals("ASiC-S") && (signLevelValue.equals("CAdES B-B") || signLevelValue.equals("CAdES B-T"))){
-//            ASiC_SwithCAdES signatureCreator = new ASiC_SwithCAdES();
-//            ToBeSigned toBeSigned = signatureCreator.doSignature(certPath,filePaths.get(0),signatureLevel,digestAlgorithm);
-//            SignatureValue signatureValue = Post_SignatureValue.requestSignatureValue(signHashUrl,authToken,toBeSigned.getBytes(),credIDValue,signAlgo,digestAlgo);
-//            DSSDocument signedDocument = signatureCreator.integrateSignature(signatureValue);
-//            saveFile(signedDocument);
-//        }
-//        else if(containerTypeValue.equals("ASiC-E") && (signLevelValue.equals("CAdES B-B") || signLevelValue.equals("CAdES B-T"))){
-//            ASiC_EwithCAdES signatureCreator = new ASiC_EwithCAdES();
-//            ToBeSigned toBeSigned = signatureCreator.doSignature(certPath,filePaths,signatureLevel,digestAlgorithm);
-//            SignatureValue signatureValue = Post_SignatureValue.requestSignatureValue(signHashUrl,authToken,toBeSigned.getBytes(),credIDValue,signAlgo,digestAlgo);
-//            DSSDocument signedDocument = signatureCreator.integrateSignature(signatureValue);
-//            saveFile(signedDocument);
-//        }
-//        else{
-//            if(filePaths.size()>1){
-//                ASiC_EwithTST timestamp1 = new ASiC_EwithTST();
-//                DSSDocument signedDocument = timestamp1.doTimeAssertion(filePaths);
-//                saveFile(signedDocument);
-//            }
-//            else{
-//                ASiC_SwithTST timestamp1 = new ASiC_SwithTST();
-//                DSSDocument signedDocument = timestamp1.doTimeAssertion(filePaths.get(0));
-//                saveFile(signedDocument);
-//            }
-//        }
+        else if(containerTypeValue.equals("ASiC-E") && (signLevelValue.equals("XAdES B-B") || signLevelValue.equals("XAdES B-T"))){
+            ASiC_EwithXAdES signatureCreator = new ASiC_EwithXAdES();
+            ToBeSigned toBeSigned = signatureCreator.doSignatureCSC(filePaths,signatureLevel,digestAlgorithm,keyInfo);
+
+            byte[] toBeSignedDigest = DSSUtils.digest(digestAlgorithm, toBeSigned.getBytes());
+
+            List<String> hashesList = new ArrayList<>();
+            hashesList.add(Base64.getEncoder().encodeToString(toBeSignedDigest));
+
+            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,Base64.getUrlEncoder().encodeToString(toBeSignedDigest));
+            String fileSavePath = chooseSaveFilePath();
+
+            Stage webViewStage = new Stage();
+            WebView webView = new WebView();
+            webViewStage.setScene(new Scene(webView, 900, 600));
+            webView.getEngine().load(authorizeLink);
+
+            WebEngine webEngine = webView.getEngine();
+            String finalSignAlgo = signAlgo;
+            webEngine.locationProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.contains("http://localhost:8080"))
+                {
+                    try {
+                        URI uri = new URI(newValue);
+                        String query = uri.getQuery();
+                        String[] params = query.split("&");
+
+                        for (String param : params) {
+                            String[] keyValue = param.split("=");
+                            if (keyValue.length == 2 && keyValue[0].equals("code")) {
+                                String codeValue = keyValue[1];
+                                Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
+                                String SAD = CSC_controller.oauth2_token(jsonBody);
+                                Sign_signHash_req signHashBody = new Sign_signHash_req(credIDValue,hashesList,finalSignAlgo,SAD);
+
+                                if(SAD != null) {
+                                    String signedDigest = CSC_controller.signatures_signHash(authToken,signHashBody);
+                                    if(signedDigest == null){
+                                        UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                                        return;
+                                    }
+                                    DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
+                                    saveFile(signedDocument,fileSavePath);
+                                    filePaths.clear();
+                                    webViewStage.close();
+                                }
+                                break;
+                            }
+                        }
+
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+            webViewStage.setTitle("Autorizare cheie privata");
+            webViewStage.show();
+        }
+        else if(containerTypeValue.equals("ASiC-S") && (signLevelValue.equals("CAdES B-B") || signLevelValue.equals("CAdES B-T"))){
+            ASiC_SwithCAdES signatureCreator = new ASiC_SwithCAdES();
+            ToBeSigned toBeSigned = signatureCreator.doSignatureCSC(filePaths.get(0), signatureLevel, digestAlgorithm, keyInfo);
+
+            byte[] toBeSignedDigest = DSSUtils.digest(digestAlgorithm, toBeSigned.getBytes());
+            List<String> hashesList = new ArrayList<>();
+            hashesList.add(Base64.getEncoder().encodeToString(toBeSignedDigest));
+
+            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,Base64.getUrlEncoder().encodeToString(toBeSignedDigest));
+
+            String fileSavePath = chooseSaveFilePath();
+
+            Stage webViewStage = new Stage();
+            WebView webView = new WebView();
+            webViewStage.setScene(new Scene(webView, 900, 600));
+            webView.getEngine().load(authorizeLink);
+
+            WebEngine webEngine = webView.getEngine();
+            String finalSignAlgo = signAlgo;
+            webEngine.locationProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.contains("http://localhost:8080"))
+                {
+                    try {
+                        URI uri = new URI(newValue);
+                        String query = uri.getQuery();
+                        String[] params = query.split("&");
+
+                        for (String param : params) {
+                            String[] keyValue = param.split("=");
+                            if (keyValue.length == 2 && keyValue[0].equals("code")) {
+                                String codeValue = keyValue[1];
+                                Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
+                                String SAD = CSC_controller.oauth2_token(jsonBody);
+                                Sign_signHash_req signHashBody = new Sign_signHash_req(credIDValue,hashesList,finalSignAlgo,SAD);
+
+                                if(SAD != null) {
+                                    String signedDigest = CSC_controller.signatures_signHash(authToken,signHashBody);
+                                    if(signedDigest == null){
+                                        UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                                        return;
+                                    }
+                                    DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
+                                    saveFile(signedDocument,fileSavePath);
+                                    filePaths.clear();
+                                    webViewStage.close();
+                                }
+                                break;
+                            }
+                        }
+
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+            webViewStage.setTitle("Autorizare cheie privata");
+            webViewStage.show();
+        }
+        else if(containerTypeValue.equals("ASiC-E") && (signLevelValue.equals("CAdES B-B") || signLevelValue.equals("CAdES B-T"))){
+            ASiC_EwithCAdES signatureCreator = new ASiC_EwithCAdES();
+            ToBeSigned toBeSigned = signatureCreator.doSignatureCSC(filePaths,signatureLevel,digestAlgorithm,keyInfo);
+
+            byte[] toBeSignedDigest = DSSUtils.digest(digestAlgorithm, toBeSigned.getBytes());
+
+            List<String> hashesList = new ArrayList<>();
+            hashesList.add(Base64.getEncoder().encodeToString(toBeSignedDigest));
+
+            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,Base64.getUrlEncoder().encodeToString(toBeSignedDigest));
+            String fileSavePath = chooseSaveFilePath();
+
+            Stage webViewStage = new Stage();
+            WebView webView = new WebView();
+            webViewStage.setScene(new Scene(webView, 900, 600));
+            webView.getEngine().load(authorizeLink);
+
+            WebEngine webEngine = webView.getEngine();
+            String finalSignAlgo = signAlgo;
+            webEngine.locationProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.contains("http://localhost:8080"))
+                {
+                    try {
+                        URI uri = new URI(newValue);
+                        String query = uri.getQuery();
+                        String[] params = query.split("&");
+
+                        for (String param : params) {
+                            String[] keyValue = param.split("=");
+                            if (keyValue.length == 2 && keyValue[0].equals("code")) {
+                                String codeValue = keyValue[1];
+                                Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
+                                String SAD = CSC_controller.oauth2_token(jsonBody);
+                                Sign_signHash_req signHashBody = new Sign_signHash_req(credIDValue,hashesList,finalSignAlgo,SAD);
+
+                                if(SAD != null) {
+                                    String signedDigest = CSC_controller.signatures_signHash(authToken,signHashBody);
+                                    if(signedDigest == null){
+                                        UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                                        return;
+                                    }
+                                    DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
+                                    saveFile(signedDocument,fileSavePath);
+                                    filePaths.clear();
+                                    webViewStage.close();
+                                }
+                                break;
+                            }
+                        }
+
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+            webViewStage.setTitle("Autorizare cheie privata");
+            webViewStage.show();
+        }
+        else{
+            if(filePaths.size()>1){
+                ASiC_EwithTST timestamp1 = new ASiC_EwithTST();
+                DSSDocument signedDocument = timestamp1.doTimeAssertion(filePaths);
+                String fileChosen = chooseSaveFilePath();
+                saveFile(signedDocument,fileChosen);
+            }
+            else{
+                ASiC_SwithTST timestamp1 = new ASiC_SwithTST();
+                DSSDocument signedDocument = timestamp1.doTimeAssertion(filePaths.get(0));
+                String fileChosen = chooseSaveFilePath();
+                saveFile(signedDocument,fileChosen);
+            }
+        }
     }
 
 }
