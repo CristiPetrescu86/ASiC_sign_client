@@ -124,7 +124,7 @@ public class LoginController {
 
         Stage webViewStage = new Stage();
         WebView webView = new WebView();
-        webViewStage.setScene(new Scene(webView, 900, 600));
+        webViewStage.setScene(new Scene(webView, 1100, 750));
         //webView.getEngine().load("https://google.com");
         webView.getEngine().load("https://rssdemo.certsign.ro/WSN.AuthorizationService_01/oauth2/authorize?client_id=81ac496c-3ab8-4e9d-bbe3-cf8ccc37f65c&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&culture=en&scope=service");
 

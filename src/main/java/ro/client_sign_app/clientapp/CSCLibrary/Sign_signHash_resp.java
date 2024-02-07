@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class sign_signHash_resp {
+public class Sign_signHash_resp {
     private List<String> signatures;
 
     public List<String> getSignatures() {
@@ -17,7 +17,7 @@ public class sign_signHash_resp {
         this.signatures = signatures;
     }
 
-    public sign_signHash_resp() {
+    public Sign_signHash_resp() {
         this.signatures = new ArrayList<>();
     }
 }

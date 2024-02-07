@@ -10,10 +10,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import ro.client_sign_app.clientapp.CSCLibrary.CSC_controller;
-import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_req;
-import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_resp;
-import ro.client_sign_app.clientapp.CSCLibrary.Oauth2_token_req;
+import ro.client_sign_app.clientapp.CSCLibrary.*;
 import ro.client_sign_app.clientapp.Signatures.*;
 import eu.europa.esig.dss.enumerations.*;
 import eu.europa.esig.dss.model.*;
@@ -31,14 +28,14 @@ public class Main2Controller {
     private String authToken;
     private ArrayList<String> filePaths;
     private List<String> credentials;
-    private HashMap<String,String> algoHashMap = new HashMap<String,String>(
+    private final HashMap<String,String> algoHashMap = new HashMap<String,String>(
             Map.ofEntries(
                     new AbstractMap.SimpleEntry<String, String>("1.2.840.113549.1.1.1", "RSA"),
                     new AbstractMap.SimpleEntry<String, String>("1.2.840.113549.1.1.11", "RSAwithSHA256"),
                     new AbstractMap.SimpleEntry<String, String>("1.2.840.113549.1.1.13", "RSAwithSHA512")
             )
     );
-    private HashMap<String,String> reverseAlgoHashMap = new HashMap<String,String>(
+    private final HashMap<String,String> reverseAlgoHashMap = new HashMap<String,String>(
             Map.ofEntries(
                     new AbstractMap.SimpleEntry<String, String>("RSA", "1.2.840.113549.1.1.1"),
                     new AbstractMap.SimpleEntry<String, String>("RSAwithSHA256", "1.2.840.113549.1.1.11"),
@@ -46,7 +43,7 @@ public class Main2Controller {
             )
     );
 
-    private HashMap<String,SignatureAlgorithm> signingAlgorithm = new HashMap<String,SignatureAlgorithm>(
+    private final HashMap<String,SignatureAlgorithm> signingAlgorithm = new HashMap<String,SignatureAlgorithm>(
             Map.ofEntries(
                     new AbstractMap.SimpleEntry<String, SignatureAlgorithm>("RSAwithSHA256",SignatureAlgorithm.RSA_SHA256),
                     new AbstractMap.SimpleEntry<String, SignatureAlgorithm>("RSAwithSHA512",SignatureAlgorithm.RSA_SHA512)
@@ -71,9 +68,6 @@ public class Main2Controller {
     private ComboBox<String> credID;
 
     @FXML
-    private Stage stage;
-
-    @FXML
     private void credInfoForKey(ActionEvent event) {
         String selectedValue = credID.getValue();
         Cred_info_req credInfoObj = new Cred_info_req(selectedValue,"chain",true,true,"ro");
@@ -94,6 +88,7 @@ public class Main2Controller {
 
     @FXML
     private void uploadFileAction(ActionEvent event) {
+        Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Alege documentele pentru semnat");
 
@@ -110,6 +105,7 @@ public class Main2Controller {
             UtilsClass.infoBox("Niciun fisier selectat","Warning",null);
             return;
         }
+        stage.close();
     }
 
     @FXML
@@ -119,14 +115,7 @@ public class Main2Controller {
     @FXML
     private ComboBox<String> signLevel;
 
-    private void saveFile(DSSDocument signedDoc) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Salveaza fisier");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Zip archive (*.zip)", "*.zip");
-        fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
-        fileChooser.getExtensionFilters().add(extFilter);
-        File fileChosen = fileChooser.showSaveDialog(stage);
-
+    private void saveFile(DSSDocument signedDoc, String fileChosen) {
         if(signedDoc == null)
         {
             UtilsClass.infoBox("Semnatura invalida", "Eroare", null);
@@ -134,13 +123,26 @@ public class Main2Controller {
         }
 
         try {
-            OutputStream out = new FileOutputStream(fileChosen.getAbsolutePath());
+            OutputStream out = new FileOutputStream(fileChosen);
             signedDoc.writeTo(out);
+            out.close();
 
         } catch (IOException e) {
             UtilsClass.infoBox("Eroare de salvare a fisierului", "Error", null);
             e.printStackTrace();
         }
+    }
+
+    private String chooseSaveFilePath(){
+        Stage stage = new Stage();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Salveaza fisier");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Zip archive (*.zip)", "*.zip");
+        fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
+        fileChooser.getExtensionFilters().add(extFilter);
+        File fileChosen = fileChooser.showSaveDialog(stage);
+        stage.close();
+        return fileChosen.getAbsolutePath();
     }
 
     @FXML
@@ -202,10 +204,13 @@ public class Main2Controller {
             ASiC_SwithXAdES signatureCreator = new ASiC_SwithXAdES();
             ToBeSigned toBeSigned = signatureCreator.doSignatureCSC(filePaths.get(0), signatureLevel, digestAlgorithm, keyInfo);
 
-
             byte[] toBeSignedDigest = DSSUtils.digest(digestAlgorithm, toBeSigned.getBytes());
+            List<String> hashesList = new ArrayList<>();
+            hashesList.add(Base64.getEncoder().encodeToString(toBeSignedDigest));
 
-            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,Base64.getEncoder().encodeToString(toBeSignedDigest));
+            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,Base64.getUrlEncoder().encodeToString(toBeSignedDigest));
+
+            String fileSavePath = chooseSaveFilePath();
 
             Stage webViewStage = new Stage();
             WebView webView = new WebView();
@@ -228,17 +233,23 @@ public class Main2Controller {
                                 String codeValue = keyValue[1];
                                 Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
                                 String SAD = CSC_controller.oauth2_token(jsonBody);
+                                Sign_signHash_req signHashBody = new Sign_signHash_req(credIDValue,hashesList,finalSignAlgo,SAD);
 
                                 if(SAD != null) {
+                                    String signedDigest = CSC_controller.signatures_signHash(authToken,signHashBody);
+                                    if(signedDigest == null){
+                                        UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                                        return;
+                                    }
+                                    DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
+                                    saveFile(signedDocument,fileSavePath);
+                                    filePaths.clear();
                                     webViewStage.close();
-                                    List<String> signedHashes = CSC_controller.signatures_signHash(authToken,credIDValue,Base64.getEncoder().encodeToString(toBeSignedDigest),finalSignAlgo,SAD);
-                                    DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedHashes.get(0),signingAlgorithm.get(signAlgoValue));
-                                    saveFile(signedDocument);
                                 }
-
                                 break;
                             }
                         }
+
                     } catch (URISyntaxException e) {
                         e.printStackTrace();
                     }

@@ -2,19 +2,13 @@ package ro.client_sign_app.clientapp.CSCLibrary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import ro.client_sign_app.clientapp.Controller.PostParams;
 import ro.client_sign_app.clientapp.Controller.UtilsClass;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class CSC_controller {
@@ -152,11 +146,7 @@ public class CSC_controller {
         }
     }
 
-    public static List<String> signatures_signHash(String authToken, String credentialID, String hash, String signAlgo, String SAD){
-        List<String> hashList = new ArrayList<>();
-        hashList.add(hash);
-        Sign_signHash_req signHashObj = new Sign_signHash_req(credentialID,hashList,signAlgo,SAD);
-
+    public static String signatures_signHash(String authToken, Sign_signHash_req signHashObj){
         try {
             URL obj = new URL(get_sign_url);
             HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
@@ -175,10 +165,9 @@ public class CSC_controller {
             }
 
             int responseCode = connection.getResponseCode();
-            if (responseCode != 200) {
-                UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+            if (responseCode != 200)
                 return null;
-            }
+
 
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(connection.getInputStream(), "utf-8"))) {
@@ -189,9 +178,9 @@ public class CSC_controller {
                 }
 
                 ObjectMapper objectMapper = new ObjectMapper();
-                sign_signHash_resp resultHashes = objectMapper.readValue(response.toString(), sign_signHash_resp.class);
+                Sign_signHash_resp resultHashes = objectMapper.readValue(response.toString(), Sign_signHash_resp.class);
 
-                return resultHashes.getSignatures();
+                return resultHashes.getSignatures().get(0);
             }
         } catch (IOException e) {
             e.printStackTrace();

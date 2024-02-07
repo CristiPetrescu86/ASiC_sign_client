@@ -8,11 +8,11 @@ ro\client_sign_app\clientapp\Signatures\ASiC_EwithXAdES.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_info_resp_cert.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_info_resp_key.class
 ro\client_sign_app\clientapp\Controller\UtilsClass.class
-ro\client_sign_app\clientapp\CSCLibrary\sign_signHash_resp.class
 ro\client_sign_app\clientapp\Signatures\Get_SigningCert.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_list_resp.class
 ro\client_sign_app\clientapp\Signatures\Get_SigningCert$1.class
 ro\client_sign_app\clientapp\CSCLibrary\CSC_controller.class
+ro\client_sign_app\clientapp\CSCLibrary\Sign_signHash_resp.class
 ro\client_sign_app\clientapp\Signatures\ASiC_EwithCAdES.class
 ro\client_sign_app\clientapp\Signatures\ASiC_SwithXAdES.class
 ro\client_sign_app\clientapp\CSCLibrary\Oauth2_token_resp.class
