@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.util.ArrayList;
 import java.util.List;
 
+// Deserializare cerere POST pentru raspunsul metodei signatures/signHash
 public class Sign_signHash_resp {
     private List<String> signatures;
 

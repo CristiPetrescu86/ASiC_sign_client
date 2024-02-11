@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.util.ArrayList;
 import java.util.List;
-
+// Deserializare cerere POST pentru raspunsul metodei credential/info
 public class Cred_info_resp_cert {
     private String status;
 

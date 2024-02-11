@@ -2,6 +2,7 @@ package ro.client_sign_app.clientapp.CSCLibrary;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+// Deserializare cerere POST pentru raspunsul metodei credential/info
 public class Cred_info_resp {
     private Cred_info_resp_key credinforespkey;
     private Cred_info_resp_cert credinforespcert;

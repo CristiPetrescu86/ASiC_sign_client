@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class CSC_controller {
 
     private static String url = "https://rssdemo.certsign.ro/WSN.AuthorizationService_01/oauth2/token";

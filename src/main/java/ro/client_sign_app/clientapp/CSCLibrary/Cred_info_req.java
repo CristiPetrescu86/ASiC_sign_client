@@ -1,5 +1,6 @@
 package ro.client_sign_app.clientapp.CSCLibrary;
 
+// Serializare cerere POST pentru metoda credential/info
 public class Cred_info_req {
     private String credentialID;
     private String certificates;

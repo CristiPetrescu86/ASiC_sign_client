@@ -1,5 +1,6 @@
 package ro.client_sign_app.clientapp.CSCLibrary;
 
+// Serializare cerere POST pentru metoda credential/list
 public class Cred_list_req {
     private Integer maxResults;
 

@@ -2,6 +2,7 @@ package ro.client_sign_app.clientapp.CSCLibrary;
 
 import java.util.List;
 
+// Serializare cerere POST pentru metoda signatures/signHash
 public class Sign_signHash_req {
     private String credentialID;
     private List<String> hash;

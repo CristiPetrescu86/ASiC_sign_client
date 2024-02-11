@@ -81,20 +81,23 @@ public class ASiC_SwithXAdES {
     public ToBeSigned doSignatureCSC(String docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm, Cred_info_resp keyInfo)
     {
         try {
+            // Incarcarea certificatului digital al semnatarului
             byte[] decodedBytes = Base64.getDecoder().decode(keyInfo.getCert().getCertificates().get(0).replace("\n", ""));
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(decodedBytes);
             X509Certificate signingCertificate = (X509Certificate) certificateFactory.generateCertificate(byteArrayInputStream);
             CertificateToken signingCert = new CertificateToken(signingCertificate);
 
+            // Incarcare document ce urmeaza sa fie semnat
             documentToBeSigned = new FileDocument(new File(docPath));
 
+            // Configurarea parametrilor pentru semnatura
             parameters.setSignatureLevel(signatureLevel);
             parameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
             parameters.setDigestAlgorithm(digestAlgorithm);
-
             parameters.setSigningCertificate(signingCert);
 
+            // Incarcarea lantului de certificate digitale
             List<CertificateToken> certificateChainList = new ArrayList<>();
             for(int i = 1; i < keyInfo.getCert().getCertificates().size(); i++) {
                 byte[] decodedCert = Base64.getDecoder().decode(keyInfo.getCert().getCertificates().get(i).replace("\n", ""));
@@ -106,7 +109,7 @@ public class ASiC_SwithXAdES {
             }
             parameters.setCertificateChain(certificateChainList);
 
-            // Timestamp
+            // Stabilirea serviciului pentru marcare temporala a semnaturii detasate
             if (signatureLevel == SignatureLevel.XAdES_BASELINE_T){
                 final String tspServer = "http://timestamp.digicert.com";
                 OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
@@ -114,6 +117,7 @@ public class ASiC_SwithXAdES {
                 service.setTspSource(tspSource);
             }
 
+            // Extragerea atributelor pentru semnare
             return service.getDataToSign(documentToBeSigned, parameters);
         }
         catch (CertificateException e) {
@@ -124,11 +128,13 @@ public class ASiC_SwithXAdES {
 
     public DSSDocument integrateSignatureCSC(String signedHash, SignatureAlgorithm SignAlgo)
     {
+        // Setarea semnaturii obtinute
         SignatureValue signatureValue = new SignatureValue();
         byte[] decodedSignature = Base64.getDecoder().decode(signedHash);
         signatureValue.setAlgorithm(SignAlgo);
         signatureValue.setValue(decodedSignature);
 
+        // Integrare semnatura in document
         DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
         return signedDoc;
     }

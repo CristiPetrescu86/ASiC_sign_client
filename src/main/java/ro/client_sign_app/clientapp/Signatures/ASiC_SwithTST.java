@@ -39,6 +39,7 @@ public class ASiC_SwithTST {
     }
 
     public DSSDocument doTimeAssertion(String docPath) {
+        // Incarcare fisier si stabilire server marca temporala
         documentToBeSigned = new FileDocument(new File(docPath));
         final String tspServer = "http://timestamp.digicert.com";
         OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
@@ -47,6 +48,7 @@ public class ASiC_SwithTST {
         service.setTspSource(tspSource);
         timestampingParameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
 
+        // Marcare temporala a documentului
         DSSDocument timestampedDoc = service.timestamp(documentToBeSigned, timestampingParameters);
         return timestampedDoc;
     }

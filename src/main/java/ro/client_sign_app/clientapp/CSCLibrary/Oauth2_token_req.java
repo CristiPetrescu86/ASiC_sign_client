@@ -1,7 +1,6 @@
 package ro.client_sign_app.clientapp.CSCLibrary;
 
-import java.lang.reflect.Field;
-
+// Serializare cerere POST pentru metoda oauth2/token
 public class Oauth2_token_req {
     private String code;
     private String grant_type;

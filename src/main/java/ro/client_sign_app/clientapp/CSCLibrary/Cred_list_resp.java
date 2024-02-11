@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.util.ArrayList;
 import java.util.List;
 
+// Deserializare cerere POST pentru raspunsul metodei credential/list
 public class Cred_list_resp {
     public List<String> getCredentials() {
         return credentialIDs;

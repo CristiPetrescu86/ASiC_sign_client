@@ -2,8 +2,7 @@ package ro.client_sign_app.clientapp.CSCLibrary;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-import java.lang.reflect.Method;
-
+// Deserializare cerere POST pentru raspunsul metodei oauth2/token
 public class Oauth2_token_resp {
     private String token_type;
     private String access_token;
