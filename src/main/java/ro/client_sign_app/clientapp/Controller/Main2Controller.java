@@ -2,26 +2,29 @@ package ro.client_sign_app.clientapp.Controller;
 import eu.europa.esig.dss.spi.DSSUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import ro.client_sign_app.clientapp.CSCLibrary.*;
-import ro.client_sign_app.clientapp.Signatures.*;
 import eu.europa.esig.dss.enumerations.*;
 import eu.europa.esig.dss.model.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
+import ro.client_sign_app.clientapp.Signatures.PAdESsignature;
+
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.List;
 
 public class Main2Controller {
 
@@ -147,6 +150,101 @@ public class Main2Controller {
 
     @FXML
     private void getSignatureAction(ActionEvent event) {
+
+        /*
+        File file = new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\Bitcoin.pdf");
+
+        try {
+            SignaturePanelExtractor extractor = new SignaturePanelExtractor(file, rect -> {
+                System.out.println("Signature panel coordinates:");
+                System.out.println("x: " + rect.getMinX() + ", y: " + rect.getMinY() + ", width: " + rect.getWidth() + ", height: " + rect.getHeight());
+            });
+
+            JFrame frame = new JFrame();
+            frame.add(extractor);
+            frame.pack();
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setVisible(true);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        */
+
+
+
+        SignatureLevel signatureLevel =  SignatureLevel.PAdES_BASELINE_B;
+        DigestAlgorithm digestAlgorithm = DigestAlgorithm.SHA256;
+        String signAlgoValue = signAlgo.getValue();
+        String signAlgo = reverseAlgoHashMap.get("RSAwithSHA256");
+        String credIDValue = credID.getValue();
+
+
+        PAdESsignature signatureCreator = new PAdESsignature();
+        ToBeSigned toBeSigned = signatureCreator.doSignatureCSC(filePaths.get(0), signatureLevel, digestAlgorithm, keyInfo);
+
+        byte[] toBeSignedDigest = DSSUtils.digest(digestAlgorithm, toBeSigned.getBytes());
+        List<String> hashesList = new ArrayList<>();
+        hashesList.add(Base64.getEncoder().encodeToString(toBeSignedDigest));
+
+        String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,Base64.getUrlEncoder().encodeToString(toBeSignedDigest));
+
+        //String fileSavePath = chooseSaveFilePath();
+
+        Stage webViewStage = new Stage();
+        WebView webView = new WebView();
+        webViewStage.setScene(new Scene(webView, 900, 600));
+        webView.getEngine().load(authorizeLink);
+
+        WebEngine webEngine = webView.getEngine();
+        String finalSignAlgo = signAlgo;
+        webEngine.locationProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains("http://localhost:8080"))
+            {
+                try {
+                    URI uri = new URI(newValue);
+                    String query = uri.getQuery();
+                    String[] params = query.split("&");
+
+                    for (String param : params) {
+                        String[] keyValue = param.split("=");
+                        if (keyValue.length == 2 && keyValue[0].equals("code")) {
+                            String codeValue = keyValue[1];
+                            Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
+                            String SAD = CSC_controller.oauth2_token(jsonBody);
+                            Sign_signHash_req signHashBody = new Sign_signHash_req(credIDValue,hashesList,finalSignAlgo,SAD);
+
+                            if(SAD != null) {
+                                String signedDigest = CSC_controller.signatures_signHash(authToken,signHashBody);
+                                if(signedDigest == null){
+                                    UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                                    return;
+                                }
+                                DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
+                                //saveFile(signedDocument,fileSavePath);
+                                saveFile(signedDocument,"D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI\\file1-signed.pdf");
+                                filePaths.clear();
+                                webViewStage.close();
+                            }
+                            break;
+                        }
+                    }
+
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        webViewStage.setTitle("Autorizare cheie privata");
+        webViewStage.show();
+
+
+
+
+
+        /*
         String credIDValue = credID.getValue();
         String signAlgoValue = signAlgo.getValue();
         String containerTypeValue = containerType.getValue();
@@ -453,7 +551,7 @@ public class Main2Controller {
                 String fileChosen = chooseSaveFilePath();
                 saveFile(signedDocument,fileChosen);
             }
-        }
+        }*/
     }
 
 }

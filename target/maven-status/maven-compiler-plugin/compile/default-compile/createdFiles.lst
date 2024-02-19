@@ -1,4 +1,5 @@
 ro\client_sign_app\clientapp\CSCLibrary\Oauth2_token_req.class
+ro\client_sign_app\clientapp\Controller\SignaturePanelExtractor.class
 ro\client_sign_app\clientapp\Signatures\Post_SignatureValue.class
 ro\client_sign_app\clientapp\Controller\MainController.class
 ro\client_sign_app\clientapp\Signatures\ASiC_SwithTST.class
@@ -11,12 +12,15 @@ ro\client_sign_app\clientapp\Controller\UtilsClass.class
 ro\client_sign_app\clientapp\Signatures\Get_SigningCert.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_list_resp.class
 ro\client_sign_app\clientapp\Signatures\Get_SigningCert$1.class
+ro\client_sign_app\clientapp\Controller\SignaturePanelExtractor$1.class
 ro\client_sign_app\clientapp\CSCLibrary\CSC_controller.class
 ro\client_sign_app\clientapp\CSCLibrary\Sign_signHash_resp.class
 ro\client_sign_app\clientapp\Signatures\ASiC_EwithCAdES.class
+ro\client_sign_app\clientapp\Controller\SignaturePanelExtractor$SignaturePanelCallback.class
 ro\client_sign_app\clientapp\Signatures\ASiC_SwithXAdES.class
 ro\client_sign_app\clientapp\CSCLibrary\Oauth2_token_resp.class
 ro\client_sign_app\clientapp\Controller\PostParams.class
+ro\client_sign_app\clientapp\Signatures\PAdESsignature.class
 ro\client_sign_app\clientapp\Controller\LoginController$1.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_info_resp.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_info_req.class

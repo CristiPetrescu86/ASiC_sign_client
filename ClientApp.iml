@@ -41,6 +41,8 @@
     <orderEntry type="library" name="Maven: jakarta.xml.bind:jakarta.xml.bind-api:2.3.3" level="project" />
     <orderEntry type="library" name="Maven: jakarta.activation:jakarta.activation-api:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-cades:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-pades:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-pades-pdfbox:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-asic-common:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-asic-cades:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-asic-xades:5.12.1" level="project" />
@@ -88,5 +90,8 @@
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-xades:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:specs-trusted-list:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: eu.europa.ec.joinup.sd-dss:dss-i18n:5.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.pdfbox:pdfbox:2.0.24" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.pdfbox:fontbox:2.0.24" level="project" />
+    <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
   </component>
 </module>

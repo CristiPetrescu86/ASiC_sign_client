@@ -16,6 +16,10 @@ module ro.client_sign_app.clientapp {
     requires jpms_dss_spi;
     requires jpms_dss_service;
     requires javafx.web;
+    requires jpms_dss_pades;
+    requires jpms_dss_pades_pdfbox;
+    requires org.apache.pdfbox;
+    requires java.desktop;
 
     exports ro.client_sign_app.clientapp;
     exports ro.client_sign_app.clientapp.Controller;

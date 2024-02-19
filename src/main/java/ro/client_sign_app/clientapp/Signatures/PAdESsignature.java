@@ -1,22 +1,19 @@
 package ro.client_sign_app.clientapp.Signatures;
 
-import eu.europa.esig.dss.asic.cades.ASiCWithCAdESSignatureParameters;
-import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
-import eu.europa.esig.dss.enumerations.ASiCContainerType;
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
-import eu.europa.esig.dss.enumerations.SignatureLevel;
-import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.SignatureValue;
-import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.enumerations.*;
+import eu.europa.esig.dss.model.*;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.pades.*;
+import eu.europa.esig.dss.pades.signature.PAdESService;
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
 import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_resp;
 
-import java.io.*;
+import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -24,55 +21,17 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-public class ASiC_SwithCAdES {
+public class PAdESsignature {
 
     private CommonCertificateVerifier commonCertificateVerifier;
-    private ASiCWithCAdESService service;
-    private ASiCWithCAdESSignatureParameters parameters;
+    private PAdESService service;
+    private PAdESSignatureParameters parameters;
     private DSSDocument documentToBeSigned;
 
-    public ASiC_SwithCAdES(){
-        parameters = new ASiCWithCAdESSignatureParameters();
+    public PAdESsignature(){
+        parameters = new PAdESSignatureParameters();
         commonCertificateVerifier = new CommonCertificateVerifier();
-        service = new ASiCWithCAdESService(commonCertificateVerifier);
-    }
-
-    public ToBeSigned doSignature(String certPath, String docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm) {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(certPath);
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            X509Certificate signingCertificate = (X509Certificate) certificateFactory.generateCertificate(fileInputStream);
-            CertificateToken signingCert = new CertificateToken(signingCertificate);
-
-            documentToBeSigned = new FileDocument(new File(docPath));
-
-            parameters.setSignatureLevel(signatureLevel);
-            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
-            parameters.setDigestAlgorithm(digestAlgorithm);
-
-            parameters.setSigningCertificate(signingCert);
-            //parameters.setCertificateChain(signingCert);
-
-            // Timestamp
-            if (signatureLevel == SignatureLevel.CAdES_BASELINE_T){
-                final String tspServer = "http://timestamp.digicert.com";
-                OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
-                tspSource.setDataLoader(new TimestampDataLoader());
-                service.setTspSource(tspSource);
-            }
-
-            return service.getDataToSign(documentToBeSigned, parameters);
-        }
-        catch (IOException | CertificateException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public DSSDocument integrateSignature(SignatureValue signatureValue)
-    {
-        DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
-        return signedDoc;
+        service = new PAdESService(commonCertificateVerifier);
     }
 
     public ToBeSigned doSignatureCSC(String docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm, Cred_info_resp keyInfo) {
@@ -89,7 +48,6 @@ public class ASiC_SwithCAdES {
 
             // Configurarea parametrilor pentru semnatura
             parameters.setSignatureLevel(signatureLevel);
-            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_S);
             parameters.setDigestAlgorithm(digestAlgorithm);
             parameters.setSigningCertificate(signingCert);
 
@@ -105,8 +63,22 @@ public class ASiC_SwithCAdES {
             }
             parameters.setCertificateChain(certificateChainList);
 
+            // Configurarea chenatului semnaturii PDF // x: 15.0, y: 669.0, width: 126.0, height: 66.0 STANGA JOS
+
+            SignatureImageParameters imageParameters= new SignatureImageParameters();
+            SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
+            imageParameters.setFieldParameters(fieldParameters);
+            fieldParameters.setOriginX(10);
+            fieldParameters.setOriginY(10);
+            fieldParameters.setWidth(150);
+            fieldParameters.setHeight(195);
+            parameters.setImageParameters(imageParameters);
+
+            service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
+
+
             // Stabilirea serviciului pentru marcare temporala a semnaturii detasate
-            if (signatureLevel == SignatureLevel.CAdES_BASELINE_T){
+            if (signatureLevel == SignatureLevel.PAdES_BASELINE_T){
                 final String tspServer = "http://timestamp.digicert.com";
                 OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
                 tspSource.setDataLoader(new TimestampDataLoader());
@@ -133,5 +105,7 @@ public class ASiC_SwithCAdES {
         DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
         return signedDoc;
     }
+
+
 
 }
