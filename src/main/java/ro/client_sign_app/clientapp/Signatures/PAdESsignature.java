@@ -5,6 +5,7 @@ import eu.europa.esig.dss.model.*;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.pades.*;
 import eu.europa.esig.dss.pades.signature.PAdESService;
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxDefaultObjectFactory;
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
 import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
@@ -17,8 +18,7 @@ import java.io.File;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Base64;
+import java.util.*;
 import java.util.List;
 
 public class PAdESsignature {
@@ -66,15 +66,19 @@ public class PAdESsignature {
             // Configurarea chenatului semnaturii PDF // x: 15.0, y: 669.0, width: 126.0, height: 66.0 STANGA JOS
 
             SignatureImageParameters imageParameters= new SignatureImageParameters();
+            imageParameters.setImage(new InMemoryDocument(PAdESsignature.class.getResourceAsStream("/ro/client_sign_app/clientapp/pen-sign.png")));
+
             SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
-            imageParameters.setFieldParameters(fieldParameters);
             fieldParameters.setOriginX(10);
             fieldParameters.setOriginY(10);
-            fieldParameters.setWidth(150);
-            fieldParameters.setHeight(195);
+            fieldParameters.setWidth(200);
+            fieldParameters.setHeight(300);
+            imageParameters.setFieldParameters(fieldParameters);
             parameters.setImageParameters(imageParameters);
+            parameters.bLevel().setSigningDate(new Date());
 
             service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
+
 
 
             // Stabilirea serviciului pentru marcare temporala a semnaturii detasate
