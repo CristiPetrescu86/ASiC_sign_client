@@ -7,10 +7,13 @@ import eu.europa.esig.dss.pades.*;
 import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxDefaultObjectFactory;
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
+import eu.europa.esig.dss.pdf.pdfbox.visible.PdfBoxNativeFont;
 import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_resp;
+import ro.client_sign_app.clientapp.Controller.PDFcoordsClass;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -34,7 +37,7 @@ public class PAdESsignature {
         service = new PAdESService(commonCertificateVerifier);
     }
 
-    public ToBeSigned doSignatureCSC(String docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm, Cred_info_resp keyInfo) {
+    public ToBeSigned doSignatureCSC(String docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm, Cred_info_resp keyInfo, PDFcoordsClass panelCoords) {
         try {
             // Incarcarea certificatului digital al semnatarului
             byte[] decodedBytes = Base64.getDecoder().decode(keyInfo.getCert().getCertificates().get(0).replace("\n", ""));
@@ -69,16 +72,29 @@ public class PAdESsignature {
             imageParameters.setImage(new InMemoryDocument(PAdESsignature.class.getResourceAsStream("/ro/client_sign_app/clientapp/pen-sign.png")));
 
             SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
-            fieldParameters.setOriginX(10);
-            fieldParameters.setOriginY(10);
-            fieldParameters.setWidth(200);
-            fieldParameters.setHeight(300);
+            fieldParameters.setOriginX((float)panelCoords.getX());
+            fieldParameters.setOriginY((float)panelCoords.getY());
+            fieldParameters.setWidth((float)panelCoords.getWidth());
+            fieldParameters.setHeight((float)panelCoords.getHeight());
             imageParameters.setFieldParameters(fieldParameters);
+
+            imageParameters.setBackgroundColor(Color.WHITE);
+            imageParameters.setAlignmentHorizontal(VisualSignatureAlignmentHorizontal.LEFT);
+
+            Integer start = keyInfo.getCert().getSubjectDN().indexOf("CN=");
+            String signerName = keyInfo.getCert().getSubjectDN().substring(start+3);
+            SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
+            textParameters.setText("Semnat in original de\n" + signerName + " la:\n" + new Date().toString());
+            textParameters.setTextColor(Color.BLUE);
+            textParameters.setPadding(10);
+            textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
+            textParameters.setFont(new PdfBoxNativeFont(PDType1Font.HELVETICA));
+            imageParameters.setTextParameters(textParameters);
+
             parameters.setImageParameters(imageParameters);
             parameters.bLevel().setSigningDate(new Date());
 
             service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
-
 
 
             // Stabilirea serviciului pentru marcare temporala a semnaturii detasate

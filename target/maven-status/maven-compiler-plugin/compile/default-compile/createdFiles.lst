@@ -7,6 +7,7 @@ ro\client_sign_app\clientapp\Controller\LoginController.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_list_req.class
 ro\client_sign_app\clientapp\Signatures\ASiC_EwithXAdES.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_info_resp_cert.class
+ro\client_sign_app\clientapp\Controller\PDFcoordsClass.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_info_resp_key.class
 ro\client_sign_app\clientapp\Controller\UtilsClass.class
 ro\client_sign_app\clientapp\Signatures\Get_SigningCert.class

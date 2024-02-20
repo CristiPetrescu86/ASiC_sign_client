@@ -1,44 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane alignment="CENTER" hgap="10.0" maxHeight="300.0" maxWidth="600.0" minHeight="300.0" minWidth="600.0" prefHeight="300.0" prefWidth="600.0" vgap="10.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ro.client_sign_app.clientapp.Controller.LoginController">
+<Pane prefHeight="345.0" prefWidth="580.0" style="-fx-background-color: #F1F1F1;" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ro.client_sign_app.clientapp.Controller.LoginController">
+    <children>
 
-    <ImageView GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1">
-        <image>
-          <Image requestedHeight="50" requestedWidth="50" url="@agreement.png" />
-        </image>
-    </ImageView>
-    <Label alignment="CENTER" text="Signing App" textAlignment="CENTER" textFill="#253d5b" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
-      <font>
-         <Font name="System Bold" size="14.0" />
-      </font></Label>
+        <Label layoutX="275.0" layoutY="85.0" text="Username:" textFill="#114084" />
+        <TextField fx:id="usernameField" layoutX="348.0" layoutY="81.0" />
 
-    <Label text="Username:" textFill="#253d5b" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-    <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+        <Label layoutX="275.0" layoutY="120.0" text="Parola:" textFill="#114084" />
+        <PasswordField fx:id="passwordField" layoutX="348.0" layoutY="116.0" />
 
-    <Label text="Password:" textFill="#253d5b" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-    <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+        <Button layoutX="334.0" layoutY="159.0" onAction="#loginButtonAction" prefHeight="27.0" prefWidth="96.0" style="-fx-border-color: #253d5b; -fx-border-radius: 3em; -fx-background-color: #F1F1F1; -fx-border-width: 0.1em;" text="Login" textFill="#114084" />
 
-    <Button onAction="#loginButtonAction" prefHeight="25.0" prefWidth="96.0" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" text="Login" textFill="#253d5b" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
-
-    <Button onAction="#loginCSCAction" prefHeight="27.0" prefWidth="188.0" style="-fx-border-color: #253d5b; -fx-border-radius: 4;" text="Login with CertSIGN" textFill="#253d5b" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
-
-    <columnConstraints>
-        <ColumnConstraints maxWidth="150.0" minWidth="50.0" prefWidth="63.0" />
-        <ColumnConstraints maxWidth="155.0" minWidth="55.0" prefWidth="142.0" />
-     </columnConstraints>
-     <rowConstraints>
-        <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
-        <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" />
-        <RowConstraints />
-        <RowConstraints />
-        <RowConstraints />
-        <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-     </rowConstraints>
-</GridPane>
+        <Button layoutX="288.0" layoutY="227.0" onAction="#loginCSCAction" prefHeight="36.0" prefWidth="188.0" style="-fx-border-color: #253d5b; -fx-border-radius: 3em; -fx-background-color: #F1F1F1; -fx-border-width: 0.1em;" text="Login with CertSIGN" textFill="#114084" />
+        <Pane layoutY="-2.0" prefHeight="353.0" prefWidth="188.0" style="-fx-background-color: #3466aa;">
+            <children>
+                <Label alignment="CENTER" layoutX="34.0" layoutY="33.0" prefHeight="27.0" prefWidth="120.0" text="Signing App" textAlignment="CENTER" textFill="#f1f1f1">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+    </children>
+</Pane>
