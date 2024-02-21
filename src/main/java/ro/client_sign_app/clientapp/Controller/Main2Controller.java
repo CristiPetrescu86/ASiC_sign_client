@@ -97,7 +97,7 @@ public class Main2Controller {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Alege documentele pentru semnat");
 
-        fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
+        //fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
 
         List<File> selectedFiles = fileChooser.showOpenMultipleDialog(stage);
         filePaths.clear();
@@ -143,7 +143,7 @@ public class Main2Controller {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Salveaza fisier");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Zip archive (*.zip)", "*.zip");
-        fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
+        //fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
         fileChooser.getExtensionFilters().add(extFilter);
         File fileChosen = fileChooser.showSaveDialog(stage);
         stage.close();
@@ -155,7 +155,7 @@ public class Main2Controller {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Salveaza fisier");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PDF document (*.pdf)", "*.pdf");
-        fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
+        //fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
         fileChooser.getExtensionFilters().add(extFilter);
         File fileChosen = fileChooser.showSaveDialog(stage);
         stage.close();

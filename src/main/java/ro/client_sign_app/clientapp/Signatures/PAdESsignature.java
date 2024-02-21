@@ -66,34 +66,41 @@ public class PAdESsignature {
             }
             parameters.setCertificateChain(certificateChainList);
 
-            // Configurarea chenatului semnaturii PDF // x: 15.0, y: 669.0, width: 126.0, height: 66.0 STANGA JOS
-
+            // Configurare imagine pentru chenarul semnaturii
             SignatureImageParameters imageParameters= new SignatureImageParameters();
             imageParameters.setImage(new InMemoryDocument(PAdESsignature.class.getResourceAsStream("/ro/client_sign_app/clientapp/pen-sign.png")));
+            imageParameters.setBackgroundColor(Color.WHITE);
+            imageParameters.setAlignmentHorizontal(VisualSignatureAlignmentHorizontal.LEFT);
+            imageParameters.setImageScaling(ImageScaling.ZOOM_AND_CENTER);
 
+            // Configurare dimensiune chenar
             SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
             fieldParameters.setOriginX((float)panelCoords.getX());
-            fieldParameters.setOriginY((float)panelCoords.getY());
+            fieldParameters.setOriginY((float)panelCoords.getY()-20);
             fieldParameters.setWidth((float)panelCoords.getWidth());
             fieldParameters.setHeight((float)panelCoords.getHeight());
             imageParameters.setFieldParameters(fieldParameters);
 
-            imageParameters.setBackgroundColor(Color.WHITE);
-            imageParameters.setAlignmentHorizontal(VisualSignatureAlignmentHorizontal.LEFT);
 
+            // Configurare parametrii text pentru semnatura
             Integer start = keyInfo.getCert().getSubjectDN().indexOf("CN=");
             String signerName = keyInfo.getCert().getSubjectDN().substring(start+3);
+            String date = new Date().toString();
+            String[] arrDate = date.split(" ");
             SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-            textParameters.setText("Semnat in original de\n" + signerName + " la:\n" + new Date().toString());
+            textParameters.setText("Semnat in original de\n" + signerName + " la:\n" + arrDate[0] + " " + arrDate[1] + " " + arrDate[2] + " " + arrDate[3] + "\n" + arrDate[4] + " " + arrDate[5]);
             textParameters.setTextColor(Color.BLUE);
-            textParameters.setPadding(10);
+            textParameters.setPadding(2);
+            DSSFont font = new DSSJavaFont(Font.SANS_SERIF);
+            font.setSize(10);
             textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
-            textParameters.setFont(new PdfBoxNativeFont(PDType1Font.HELVETICA));
+            textParameters.setFont(font);
             imageParameters.setTextParameters(textParameters);
 
             parameters.setImageParameters(imageParameters);
             parameters.bLevel().setSigningDate(new Date());
 
+            // Activare semnatura vizibila
             service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
 
 

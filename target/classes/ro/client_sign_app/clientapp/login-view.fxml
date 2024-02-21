@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
@@ -23,6 +24,11 @@
                         <Font name="System Bold" size="18.0" />
                     </font>
                 </Label>
+            <ImageView fitHeight="137.0" fitWidth="120.0" layoutX="34.0" layoutY="85.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@login_agreem.png" />
+                </image>
+            </ImageView>
             </children>
         </Pane>
     </children>
