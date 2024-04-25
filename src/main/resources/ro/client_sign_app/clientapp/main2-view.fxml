@@ -26,12 +26,13 @@
         </ComboBox>
 
         <Label alignment="CENTER" layoutX="279.0" layoutY="211.0" text="Tip semnatura" textAlignment="CENTER" textFill="#114084" />
-        <ComboBox fx:id="containerType" onAction="#checkPDFselected" layoutX="463.0" layoutY="206.0" prefHeight="25.0" prefWidth="132.0" style="-fx-border-color: #114084; -fx-border-radius: 4;" value="ASiC-S">
+        <ComboBox fx:id="containerType" onAction="#checkPDFselected" layoutX="463.0" layoutY="206.0" prefHeight="25.0" prefWidth="132.0" style="-fx-border-color: #114084; -fx-border-radius: 4;" value="XAdES">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="ASiC-S" />
                     <String fx:value="ASiC-E" />
                     <String fx:value="PAdES" />
+                    <String fx:value="XAdES" />
                 </FXCollections>
             </items>
         </ComboBox>

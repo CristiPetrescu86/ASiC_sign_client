@@ -162,6 +162,18 @@ public class Main2Controller {
         return fileChosen.getAbsolutePath();
     }
 
+    private String chooseSaveFilePathXML(){
+        Stage stage = new Stage();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Salveaza fisier");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML document (*.xml)", "*.xml");
+        //fileChooser.setInitialDirectory(new File("D:\\Facultate\\Master\\Dizertatie\\Part2\\TEST_SEMNATURI"));
+        fileChooser.getExtensionFilters().add(extFilter);
+        File fileChosen = fileChooser.showSaveDialog(stage);
+        stage.close();
+        return fileChosen.getAbsolutePath();
+    }
+
     @FXML
     private void checkPDFselected(ActionEvent event)
     {
@@ -214,6 +226,17 @@ public class Main2Controller {
         {
             UtilsClass.infoBox("Selectati ASiC-E!", "Eroare", null);
             return;
+        }
+
+        if(containerTypeValue.equals("XAdES"))
+        {
+            for (String filePath: filePaths){
+                if(!UtilsClass.getFileExtension(filePath).equals("xml"))
+                {
+                    UtilsClass.infoBox("Selectati doar fisier .xml!", "Eroare", null);
+                    return;
+                }
+            }
         }
 
         if(signLevelValue.contains("XAdES")) {
@@ -505,6 +528,67 @@ public class Main2Controller {
             String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,Base64.getUrlEncoder().encodeToString(toBeSignedDigest));
 
             String fileSavePath = chooseSaveFilePathPDF();
+
+            Stage webViewStage = new Stage();
+            WebView webView = new WebView();
+            webViewStage.setScene(new Scene(webView, 900, 600));
+            webView.getEngine().load(authorizeLink);
+
+            WebEngine webEngine = webView.getEngine();
+            String finalSignAlgo = signAlgo;
+            webEngine.locationProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.contains("http://localhost:8080"))
+                {
+                    try {
+                        URI uri = new URI(newValue);
+                        String query = uri.getQuery();
+                        String[] params = query.split("&");
+
+                        for (String param : params) {
+                            String[] keyValue = param.split("=");
+                            if (keyValue.length == 2 && keyValue[0].equals("code")) {
+                                String codeValue = keyValue[1];
+                                Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
+                                String SAD = CSC_controller.oauth2_token(jsonBody);
+                                Sign_signHash_req signHashBody = new Sign_signHash_req(credIDValue,hashesList,finalSignAlgo,SAD);
+
+                                if(SAD != null) {
+                                    String signedDigest = CSC_controller.signatures_signHash(authToken,signHashBody);
+                                    if(signedDigest == null){
+                                        UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                                        return;
+                                    }
+                                    DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
+                                    saveFile(signedDocument,fileSavePath);
+                                    filePaths.clear();
+                                    webViewStage.close();
+                                }
+                                break;
+                            }
+                        }
+
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+            webViewStage.setTitle("Autorizare cheie privata");
+            webViewStage.show();
+        }
+        else if(containerTypeValue.equals("XAdES") && ((signLevelValue.equals("XAdES B-B") || signLevelValue.equals("XAdES B-T"))))
+        {
+            XAdESsignature signatureCreator = new XAdESsignature();
+            ToBeSigned toBeSigned = signatureCreator.doSignatureCSC(filePaths.get(0), signatureLevel, digestAlgorithm, keyInfo);
+
+            byte[] toBeSignedDigest = DSSUtils.digest(digestAlgorithm, toBeSigned.getBytes());
+            List<String> hashesList = new ArrayList<>();
+            hashesList.add(Base64.getEncoder().encodeToString(toBeSignedDigest));
+
+            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,Base64.getUrlEncoder().encodeToString(toBeSignedDigest));
+
+            String fileSavePath = chooseSaveFilePathXML();
 
             Stage webViewStage = new Stage();
             WebView webView = new WebView();
