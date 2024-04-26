@@ -188,4 +188,47 @@ public class CSC_controller {
             return null;
         }
     }
+
+    public static List<String> signatures_signHashes(String authToken, Sign_signHash_req signHashObj){
+        try {
+            URL obj = new URL(get_sign_url);
+            HttpsURLConnection connection = (HttpsURLConnection) obj.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Authorization", "Bearer " + authToken);
+
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(signHashObj);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = json.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200)
+                return null;
+
+
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine = null;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                Sign_signHash_resp resultHashes = objectMapper.readValue(response.toString(), Sign_signHash_resp.class);
+
+                return resultHashes.getSignatures();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

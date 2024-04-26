@@ -17,6 +17,7 @@ D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\cli
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\MainController.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\PostParams.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\CSCLibrary\Oauth2_token_req.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\CAdESmultiSignature.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\Get_SigningCert.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\CSCLibrary\Cred_info_resp_cert.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\ASiC_EwithXAdES.java

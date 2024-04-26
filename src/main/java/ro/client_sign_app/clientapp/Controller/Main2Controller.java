@@ -138,6 +138,25 @@ public class Main2Controller {
         }
     }
 
+    private void saveFile(ArrayList<DSSDocument> signedDoc, ArrayList<String> fileChosen) {
+        if(signedDoc == null)
+        {
+            UtilsClass.infoBox("Semnatura invalida", "Eroare", null);
+            return;
+        }
+
+        for (int i = 0; i < signedDoc.size(); i++)
+        try {
+            OutputStream out = new FileOutputStream(fileChosen.get(i));
+            signedDoc.get(i).writeTo(out);
+            out.close();
+
+        } catch (IOException e) {
+            UtilsClass.infoBox("Eroare de salvare a fisierului", "Error", null);
+            e.printStackTrace();
+        }
+    }
+
     private String chooseSaveFilePath(){
         Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
@@ -173,6 +192,15 @@ public class Main2Controller {
         stage.close();
         return fileChosen.getAbsolutePath();
     }
+
+    private ArrayList<String> fileSavePaths_withext_p7s(ArrayList<String> filePaths){
+        ArrayList<String> appendedFileNames = new ArrayList<>();
+        for(int i = 0; i < filePaths.size(); i++) {
+            appendedFileNames.add(filePaths.get(i) + "_SIGNED.p7s");
+        }
+        return appendedFileNames;
+    }
+
 
     private String chooseSaveFilePathp7s(){
         Stage stage = new Stage();
@@ -650,7 +678,7 @@ public class Main2Controller {
             webViewStage.setTitle("Autorizare cheie privata");
             webViewStage.show();
         }
-        else if(containerTypeValue.equals("CAdES") && ((signLevelValue.equals("CAdES B-B") || signLevelValue.equals("CAdES B-T"))))
+        else if(containerTypeValue.equals("CAdES") && ((signLevelValue.equals("CAdES B-B") || signLevelValue.equals("CAdES B-T"))) && filePaths.size()  == 1)
         {
             CAdESsignature signatureCreator = new CAdESsignature();
             ToBeSigned toBeSigned = signatureCreator.doSignatureCSC(filePaths.get(0), signatureLevel, digestAlgorithm, keyInfo);
@@ -694,6 +722,77 @@ public class Main2Controller {
                                     }
                                     DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
                                     saveFile(signedDocument,fileSavePath);
+                                    filePaths.clear();
+                                    webViewStage.close();
+                                }
+                                break;
+                            }
+                        }
+
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+            webViewStage.setTitle("Autorizare cheie privata");
+            webViewStage.show();
+        }
+        else if(containerTypeValue.equals("CAdES") && ((signLevelValue.equals("CAdES B-B") || signLevelValue.equals("CAdES B-T"))) && filePaths.size() > 1)
+        {
+            CAdESmultiSignature signatureCreator = new CAdESmultiSignature(filePaths.size());
+            ArrayList<ToBeSigned> toBeSignedHashes = signatureCreator.doSignatureCSC(filePaths, signatureLevel, digestAlgorithm, keyInfo);
+
+            ArrayList<byte[]> tobeSignedDigests = new ArrayList<>();
+            for (int i = 0; i < filePaths.size(); i++)
+                tobeSignedDigests.add(DSSUtils.digest(digestAlgorithm,toBeSignedHashes.get(i).getBytes()));
+
+            ArrayList<String> base64Hashes = new ArrayList<>();
+            for (int i = 0; i < filePaths.size(); i++)
+                base64Hashes.add(Base64.getUrlEncoder().encodeToString(tobeSignedDigests.get(i)));
+
+            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,base64Hashes);
+
+            ArrayList<String> fileSavePaths;
+            fileSavePaths = fileSavePaths_withext_p7s(filePaths);
+
+            Stage webViewStage = new Stage();
+            WebView webView = new WebView();
+            webViewStage.setScene(new Scene(webView, 900, 600));
+            webView.getEngine().load(authorizeLink);
+
+            WebEngine webEngine = webView.getEngine();
+            String finalSignAlgo = signAlgo;
+            ArrayList<String> finalFileSavePaths = fileSavePaths;
+            webEngine.locationProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.contains("http://localhost:8080"))
+                {
+                    try {
+                        URI uri = new URI(newValue);
+                        String query = uri.getQuery();
+                        String[] params = query.split("&");
+
+                        for (String param : params) {
+                            String[] keyValue = param.split("=");
+                            if (keyValue.length == 2 && keyValue[0].equals("code")) {
+                                String codeValue = keyValue[1];
+                                Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
+                                String SAD = CSC_controller.oauth2_token(jsonBody);
+
+                                Sign_signHash_req signHashBody = new Sign_signHash_req(credIDValue,base64Hashes,finalSignAlgo,SAD);
+
+                                if(SAD != null) {
+                                    List<String> signedDigest = CSC_controller.signatures_signHashes(authToken,signHashBody);
+
+                                    if(signedDigest == null){
+                                        UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                                        return;
+                                    }
+
+                                    ArrayList<DSSDocument> signedDocuments;
+                                    signedDocuments = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
+                                    saveFile(signedDocuments, finalFileSavePaths);
                                     filePaths.clear();
                                     webViewStage.close();
                                 }
