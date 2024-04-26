@@ -1,7 +1,7 @@
 package ro.client_sign_app.clientapp.Signatures;
 
-import eu.europa.esig.dss.definition.DSSNamespace;
-import eu.europa.esig.dss.definition.xmldsig.XMLDSigNamespace;
+import eu.europa.esig.dss.cades.CAdESSignatureParameters;
+import eu.europa.esig.dss.cades.signature.CAdESService;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -14,17 +14,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
-import eu.europa.esig.dss.xades.XAdESSignatureParameters;
-import eu.europa.esig.dss.xades.definition.XAdESNamespaces;
-import eu.europa.esig.dss.xades.reference.CanonicalizationTransform;
-import eu.europa.esig.dss.xades.reference.DSSReference;
-import eu.europa.esig.dss.xades.reference.DSSTransform;
-import eu.europa.esig.dss.xades.reference.EnvelopedSignatureTransform;
-import eu.europa.esig.dss.xades.signature.XAdESService;
 import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_resp;
-
-import javax.xml.crypto.dsig.CanonicalizationMethod;
-import javax.xml.crypto.dsig.XMLSignature;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,20 +25,22 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-public class XAdESsignature {
+
+public class CAdESsignature {
+
     private CommonCertificateVerifier commonCertificateVerifier;
-    private XAdESService service;
-    private XAdESSignatureParameters parameters;
+    private CAdESService service;
+    private CAdESSignatureParameters parameters;
     private DSSDocument documentToBeSigned;
 
-    public XAdESsignature(){
-        parameters = new XAdESSignatureParameters();
+    public CAdESsignature(){
+        parameters = new CAdESSignatureParameters();
         commonCertificateVerifier = new CommonCertificateVerifier();
-        service = new XAdESService(commonCertificateVerifier);
+        service = new CAdESService(commonCertificateVerifier);
     }
 
     public ToBeSigned doSignatureCSC(String docPath, SignatureLevel signatureLevel, DigestAlgorithm digestAlgorithm, Cred_info_resp keyInfo){
-        try{
+        try {
             // Incarcarea certificatului digital al semnatarului
             byte[] decodedBytes = Base64.getDecoder().decode(keyInfo.getCert().getCertificates().get(0).replace("\n", ""));
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
@@ -61,33 +53,9 @@ public class XAdESsignature {
 
             // Configurarea parametrilor pentru semnatura
             parameters.setSignatureLevel(signatureLevel);
-            parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
+            parameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
             parameters.setDigestAlgorithm(digestAlgorithm);
             parameters.setSigningCertificate(signingCert);
-
-            // alte configurari
-            parameters.setXadesNamespace(XAdESNamespaces.XADES_132);
-            parameters.setXmldsigNamespace(new DSSNamespace(XMLSignature.XMLNS, "prefix123"));
-
-            // Prepare transformations in the proper order
-            List<DSSTransform> transforms = new ArrayList<>();
-            DSSTransform envelopedTransform = new EnvelopedSignatureTransform();
-            transforms.add(envelopedTransform);
-            DSSTransform canonicalization = new CanonicalizationTransform(CanonicalizationMethod.EXCLUSIVE_WITH_COMMENTS);
-            transforms.add(canonicalization);
-            List<DSSReference> references = new ArrayList<>();
-            // Initialize and configure ds:Reference based on the provided signer document
-            DSSReference dssReference = new DSSReference();
-            dssReference.setContents(documentToBeSigned);
-            dssReference.setId("r-" + documentToBeSigned.getName());
-            dssReference.setTransforms(transforms);
-            // set empty URI to cover the whole document
-            dssReference.setUri("");
-            dssReference.setDigestMethodAlgorithm(DigestAlgorithm.SHA256);
-            references.add(dssReference);
-            // set references
-            parameters.setReferences(references);
-
 
             // Incarcarea lantului de certificate digitale
             List<CertificateToken> certificateChainList = new ArrayList<>();
@@ -102,7 +70,7 @@ public class XAdESsignature {
             parameters.setCertificateChain(certificateChainList);
 
             // Stabilirea serviciului pentru marcare temporala a semnaturii detasate
-            if (signatureLevel == SignatureLevel.XAdES_BASELINE_T){
+            if (signatureLevel == SignatureLevel.CAdES_BASELINE_T){
                 final String tspServer = "http://timestamp.digicert.com";
                 OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
                 tspSource.setDataLoader(new TimestampDataLoader());
@@ -130,6 +98,5 @@ public class XAdESsignature {
         DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
         return signedDoc;
     }
-
 
 }

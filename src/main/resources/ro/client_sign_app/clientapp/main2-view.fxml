@@ -33,6 +33,7 @@
                     <String fx:value="ASiC-E" />
                     <String fx:value="PAdES" />
                     <String fx:value="XAdES" />
+                    <String fx:value="CAdES" />
                 </FXCollections>
             </items>
         </ComboBox>

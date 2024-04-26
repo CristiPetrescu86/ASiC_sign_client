@@ -21,6 +21,7 @@ ro\client_sign_app\clientapp\Controller\SignaturePanelExtractor$SignaturePanelCa
 ro\client_sign_app\clientapp\Signatures\ASiC_SwithXAdES.class
 ro\client_sign_app\clientapp\CSCLibrary\Oauth2_token_resp.class
 ro\client_sign_app\clientapp\Controller\PostParams.class
+ro\client_sign_app\clientapp\Signatures\CAdESsignature.class
 ro\client_sign_app\clientapp\Signatures\PAdESsignature.class
 ro\client_sign_app\clientapp\Controller\LoginController$1.class
 ro\client_sign_app\clientapp\CSCLibrary\Cred_info_resp.class

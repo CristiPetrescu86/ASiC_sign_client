@@ -21,6 +21,8 @@ module ro.client_sign_app.clientapp {
     requires org.apache.pdfbox;
     requires java.desktop;
     requires jpms_dss_xades;
+    requires java.xml.crypto;
+    requires jpms_dss_cades;
 
     exports ro.client_sign_app.clientapp;
     exports ro.client_sign_app.clientapp.Controller;
