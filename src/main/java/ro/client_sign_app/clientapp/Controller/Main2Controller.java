@@ -1,5 +1,10 @@
 package ro.client_sign_app.clientapp.Controller;
+import eu.europa.esig.dss.pades.PAdESTimestampParameters;
+import eu.europa.esig.dss.pades.signature.PAdESService;
+import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
+import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -748,11 +753,14 @@ public class Main2Controller {
             for (int i = 0; i < filePaths.size(); i++)
                 tobeSignedDigests.add(DSSUtils.digest(digestAlgorithm,toBeSignedHashes.get(i).getBytes()));
 
+            ArrayList<String> baseURL64Hashes = new ArrayList<>();
             ArrayList<String> base64Hashes = new ArrayList<>();
-            for (int i = 0; i < filePaths.size(); i++)
-                base64Hashes.add(Base64.getUrlEncoder().encodeToString(tobeSignedDigests.get(i)));
+            for (int i = 0; i < filePaths.size(); i++) {
+                baseURL64Hashes.add(Base64.getUrlEncoder().encodeToString(tobeSignedDigests.get(i)));
+                base64Hashes.add(Base64.getEncoder().encodeToString(tobeSignedDigests.get(i)));
+            }
 
-            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,base64Hashes);
+            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,baseURL64Hashes);
 
             ArrayList<String> fileSavePaths;
             fileSavePaths = fileSavePaths_withext_p7s(filePaths);

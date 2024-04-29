@@ -130,7 +130,25 @@ public class PAdESsignature {
 
         // Integrare semnatura in documents
         DSSDocument signedDoc = service.signDocument(documentToBeSigned, parameters, signatureValue);
-        return signedDoc;
+
+//        PAdESSignatureParameters tstParameters = new PAdESSignatureParameters();
+//        PAdESService tstService = new PAdESService(new CommonCertificateVerifier());
+//        tstParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_T);
+//        final String tspServer = "http://timestamp.digicert.com";
+//        OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
+//        tspSource.setDataLoader(new TimestampDataLoader());
+//        tstService.setTspSource(tspSource);
+//
+//        DSSDocument signedDoc2 = tstService.extendDocument(signedDoc, tstParameters);
+
+        PAdESService tstService = new PAdESService(new CommonCertificateVerifier());
+        final String tspServer = "http://timestamp.digicert.com";
+        OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
+        tspSource.setDataLoader(new TimestampDataLoader());
+        tstService.setTspSource(tspSource);
+        DSSDocument signedDoc2 = tstService.timestamp(signedDoc,new PAdESTimestampParameters());
+
+        return signedDoc2;
     }
 
 
