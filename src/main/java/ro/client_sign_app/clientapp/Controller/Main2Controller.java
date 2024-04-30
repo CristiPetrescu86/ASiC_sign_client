@@ -604,7 +604,10 @@ public class Main2Controller {
                                         return;
                                     }
                                     DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
-                                    saveFile(signedDocument,fileSavePath);
+                                    DSSDocument augmentToTLevel = signatureCreator.augmentToTLevel(signedDocument);
+                                    //DSSDocument augmentToLTLevel = signatureCreator.augmentToLTLevel(augmentToTLevel,keyInfo);
+
+                                    saveFile(augmentToTLevel,fileSavePath);
                                     filePaths.clear();
                                     webViewStage.close();
                                 }
