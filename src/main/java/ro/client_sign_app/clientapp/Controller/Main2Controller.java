@@ -206,6 +206,14 @@ public class Main2Controller {
         return appendedFileNames;
     }
 
+    private ArrayList<String> fileSavePaths_withext_xml(ArrayList<String> filePaths){
+        ArrayList<String> appendedFileNames = new ArrayList<>();
+        for(int i = 0; i < filePaths.size(); i++) {
+            appendedFileNames.add(filePaths.get(i) + "_SIGNED.xml");
+        }
+        return appendedFileNames;
+    }
+
 
     private String chooseSaveFilePathp7s(){
         Stage stage = new Stage();
@@ -625,7 +633,7 @@ public class Main2Controller {
             webViewStage.setTitle("Autorizare cheie privata");
             webViewStage.show();
         }
-        else if(containerTypeValue.equals("XAdES") && ((signLevelValue.equals("XAdES B-B") || signLevelValue.equals("XAdES B-T"))))
+        else if(containerTypeValue.equals("XAdES") && ((signLevelValue.equals("XAdES B-B") || signLevelValue.equals("XAdES B-T"))) && filePaths.size()  == 1)
         {
             XAdESsignature signatureCreator = new XAdESsignature();
             ToBeSigned toBeSigned = signatureCreator.doSignatureCSC(filePaths.get(0), signatureLevel, digestAlgorithm, keyInfo);
@@ -669,6 +677,80 @@ public class Main2Controller {
                                     }
                                     DSSDocument signedDocument = signatureCreator.integrateSignatureCSC(signedDigest,signingAlgorithm.get(signAlgoValue));
                                     saveFile(signedDocument,fileSavePath);
+                                    filePaths.clear();
+                                    webViewStage.close();
+                                }
+                                break;
+                            }
+                        }
+
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+            webViewStage.setTitle("Autorizare cheie privata");
+            webViewStage.show();
+        }
+        else if(containerTypeValue.equals("XAdES") && ((signLevelValue.equals("XAdES B-B") || signLevelValue.equals("XAdES B-T"))) && filePaths.size()  > 1)
+        {
+            XAdESmultisignature signatureCreator = new XAdESmultisignature(filePaths.size());
+            ArrayList<ToBeSigned> toBeSignedHashes = signatureCreator.doSignature(filePaths,signatureLevel,digestAlgorithm,keyInfo);
+
+            ArrayList<byte[]> tobeSignedDigests = new ArrayList<>();
+            for (int i = 0; i < filePaths.size(); i++)
+                tobeSignedDigests.add(DSSUtils.digest(digestAlgorithm,toBeSignedHashes.get(i).getBytes()));
+
+            ArrayList<String> baseURL64Hashes = new ArrayList<>();
+            ArrayList<String> base64Hashes = new ArrayList<>();
+            for (int i = 0; i < filePaths.size(); i++) {
+                baseURL64Hashes.add(Base64.getUrlEncoder().encodeToString(tobeSignedDigests.get(i)));
+                base64Hashes.add(Base64.getEncoder().encodeToString(tobeSignedDigests.get(i)));
+            }
+
+            String authorizeLink = UtilsClass.computeAuthorizeLink(credIDValue,baseURL64Hashes);
+
+            ArrayList<String> fileSavePaths;
+            fileSavePaths = fileSavePaths_withext_xml(filePaths);
+
+            Stage webViewStage = new Stage();
+            WebView webView = new WebView();
+            webViewStage.setScene(new Scene(webView, 900, 600));
+            webView.getEngine().load(authorizeLink);
+
+            WebEngine webEngine = webView.getEngine();
+            String finalSignAlgo = signAlgo;
+            ArrayList<String> finalFileSavePaths = fileSavePaths;
+            webEngine.locationProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.contains("http://localhost:8080"))
+                {
+                    try {
+                        URI uri = new URI(newValue);
+                        String query = uri.getQuery();
+                        String[] params = query.split("&");
+
+                        for (String param : params) {
+                            String[] keyValue = param.split("=");
+                            if (keyValue.length == 2 && keyValue[0].equals("code")) {
+                                String codeValue = keyValue[1];
+                                Oauth2_token_req jsonBody = new Oauth2_token_req(codeValue);
+                                String SAD = CSC_controller.oauth2_token(jsonBody);
+
+                                Sign_signHash_req signHashBody = new Sign_signHash_req(credIDValue,base64Hashes,finalSignAlgo,SAD);
+
+                                if(SAD != null) {
+                                    List<String> signedDigest = CSC_controller.signatures_signHashes(authToken,signHashBody);
+
+                                    if(signedDigest == null){
+                                        UtilsClass.infoBox("Eroare a serverului", "Eroare", null);
+                                        return;
+                                    }
+
+                                    ArrayList<DSSDocument> signedDocuments;
+                                    signedDocuments = signatureCreator.integrateSignature(signedDigest,signingAlgorithm.get(signAlgoValue));
+                                    saveFile(signedDocuments, finalFileSavePaths);
                                     filePaths.clear();
                                     webViewStage.close();
                                 }

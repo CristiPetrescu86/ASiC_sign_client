@@ -1,4 +1,5 @@
 ro\client_sign_app\clientapp\CSCLibrary\Oauth2_token_req.class
+ro\client_sign_app\clientapp\Signatures\XAdESmultisignature.class
 ro\client_sign_app\clientapp\Controller\SignaturePanelExtractor.class
 ro\client_sign_app\clientapp\Signatures\Post_SignatureValue.class
 ro\client_sign_app\clientapp\Controller\MainController.class
