@@ -48,6 +48,7 @@
                     <String fx:value="XAdES B-T" />
                     <String fx:value="Time assertion" />
                     <String fx:value="PAdES B-B" />
+                    <String fx:value="XAdES counterSign" />
                 </FXCollections>
             </items>
         </ComboBox>
