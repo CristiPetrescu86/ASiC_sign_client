@@ -105,17 +105,18 @@ public class PAdESsignature {
             parameters.setImageParameters(imageParameters);
             parameters.bLevel().setSigningDate(new Date());
 
+            PdfBoxNativeObjectFactory obj = new PdfBoxNativeObjectFactory();
             // Activare semnatura vizibila
             service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
 
-
-            /* // Stabilirea serviciului pentru marcare temporala a semnaturii detasate
+            // Stabilirea serviciului pentru marcare temporala a semnaturii detasate
             if (signatureLevel == SignatureLevel.PAdES_BASELINE_T){
+                parameters.setContentSize(16384);
                 final String tspServer = "http://timestamp.digicert.com";
                 OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
                 tspSource.setDataLoader(new TimestampDataLoader());
                 service.setTspSource(tspSource);
-            }*/
+            }
 
             // Extragerea atributelor pentru semnare
             return service.getDataToSign(documentToBeSigned, parameters);

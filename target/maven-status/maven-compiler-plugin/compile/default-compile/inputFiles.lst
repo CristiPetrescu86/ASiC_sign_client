@@ -9,6 +9,7 @@ D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\cli
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\UtilsClass.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Controller\LoginController.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\CAdESsignature.java
+D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\Signatures\XAdESmultisignature.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\CSCLibrary\Cred_info_resp.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\LoginPage.java
 D:\Facultate\Master\Dizertatie\Part2\Client\src\main\java\ro\client_sign_app\clientapp\CSCLibrary\Cred_info_req.java

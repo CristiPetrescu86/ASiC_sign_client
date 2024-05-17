@@ -313,7 +313,7 @@ public class Main2Controller {
         else if(signLevelValue.equals("CAdES B-T"))
             signatureLevel = SignatureLevel.CAdES_BASELINE_T;
         else
-            signatureLevel = SignatureLevel.PAdES_BASELINE_B;
+            signatureLevel = SignatureLevel.PAdES_BASELINE_T;
 
         DigestAlgorithm digestAlgorithm = null;
         String signAlgo = null;
