@@ -6,7 +6,6 @@ module ro.client_sign_app.clientapp {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires jpms_dss_asic_cades;
-    requires jpms_dss_enumerations;
     requires jpms_dss_model;
     requires jpms_dss_document;
     requires jpms_dss_asic_xades;
@@ -21,8 +20,14 @@ module ro.client_sign_app.clientapp {
     requires org.apache.pdfbox;
     requires java.desktop;
     requires jpms_dss_xades;
+    requires jpms_dss_specs_xades;
     requires java.xml.crypto;
     requires jpms_dss_cades;
+    requires jpms_dss_validation_policy;
+    requires jpms_dss_specs_validation_report;
+    requires jpms_dss_diagnostic_data;
+    requires jpms_dss_jaxb_common;
+    requires jpms_dss_enumerations;
 
     exports ro.client_sign_app.clientapp;
     exports ro.client_sign_app.clientapp.Controller;

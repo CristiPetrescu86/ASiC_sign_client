@@ -5,9 +5,7 @@ import eu.europa.esig.dss.model.*;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.pades.*;
 import eu.europa.esig.dss.pades.signature.PAdESService;
-import eu.europa.esig.dss.pdf.pdfbox.PdfBoxDefaultObjectFactory;
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
-import eu.europa.esig.dss.pdf.pdfbox.visible.PdfBoxNativeFont;
 import eu.europa.esig.dss.service.SecureRandomNonceSource;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
 import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
@@ -16,7 +14,6 @@ import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_resp;
 import ro.client_sign_app.clientapp.Controller.PDFcoordsClass;
 
@@ -26,9 +23,10 @@ import java.io.File;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Date;
 import java.util.List;
-
 public class PAdESsignature {
 
     private CommonCertificateVerifier commonCertificateVerifier;
@@ -183,15 +181,30 @@ public class PAdESsignature {
         ltvalidityCertificateVerifier.addTrustedCertSources();
 
         PAdESService ltvalidityService = new PAdESService(ltvalidityCertificateVerifier);
-        final String tspServer = "http://pki.codegic.com/codegic-service/timestamp";
+
+        DSSDocument ltLevelDoc = ltvalidityService.extendDocument(documentToBeAugmented,ltvalidityParameters);
+
+        return ltLevelDoc;
+    }
+
+    public static DSSDocument augmentToLTALevel(DSSDocument documentToBeAugmented){
+        PAdESSignatureParameters ltavalidityParameters = new PAdESSignatureParameters();
+        ltavalidityParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+        CommonCertificateVerifier ltavalidityCertificateVerifier = new CommonCertificateVerifier();
+
+        ltavalidityCertificateVerifier.setOcspSource(new OnlineOCSPSource());
+        ltavalidityCertificateVerifier.setCrlSource(new OnlineCRLSource());
+
+        PAdESService ltavalidityService = new PAdESService(ltavalidityCertificateVerifier);
+
+        final String tspServer = "http://timestamp.digicert.com";
         OnlineTSPSource tspSource = new OnlineTSPSource(tspServer);
         tspSource.setNonceSource(new SecureRandomNonceSource());
-        tspSource.setPolicyOid("1.2.1");
-        ltvalidityService.setTspSource(tspSource);
+        ltavalidityService.setTspSource(tspSource);
 
-        DSSDocument tLevelDoc = ltvalidityService.extendDocument(documentToBeAugmented,ltvalidityParameters);
+        DSSDocument ltaLevelDoc = ltavalidityService.extendDocument(documentToBeAugmented,ltavalidityParameters);
 
-        return tLevelDoc;
+        return ltaLevelDoc;
     }
 
 

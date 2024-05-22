@@ -1,36 +1,33 @@
 package ro.client_sign_app.clientapp.Controller;
-import eu.europa.esig.dss.pades.PAdESTimestampParameters;
-import eu.europa.esig.dss.pades.signature.PAdESService;
-import eu.europa.esig.dss.service.http.commons.TimestampDataLoader;
-import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
+
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.FileDocument;
+import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import ro.client_sign_app.clientapp.CSCLibrary.*;
-import eu.europa.esig.dss.enumerations.*;
-import eu.europa.esig.dss.model.*;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.stage.Stage;
+import ro.client_sign_app.clientapp.CSCLibrary.*;
 import ro.client_sign_app.clientapp.Signatures.*;
 
 import javax.swing.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.List;
 
 public class Main2Controller {
 
@@ -53,7 +50,7 @@ public class Main2Controller {
             )
     );
 
-    private final HashMap<String,SignatureAlgorithm> signingAlgorithm = new HashMap<String,SignatureAlgorithm>(
+    private final HashMap<String, SignatureAlgorithm> signingAlgorithm = new HashMap<String,SignatureAlgorithm>(
             Map.ofEntries(
                     new AbstractMap.SimpleEntry<String, SignatureAlgorithm>("RSAwithSHA256",SignatureAlgorithm.RSA_SHA256),
                     new AbstractMap.SimpleEntry<String, SignatureAlgorithm>("RSAwithSHA512",SignatureAlgorithm.RSA_SHA512)
@@ -331,6 +328,22 @@ public class Main2Controller {
         }
         else {
             UtilsClass.infoBox("Algo not supported", "Error", null);
+            return;
+        }
+
+
+        if(signLevelValue.equals("PAdES augm B-LTA")){
+            DSSDocument docToBeAugm = new FileDocument(new File(filePaths.get(0)));
+
+//            Reports reports = validationService.validateDocument(documentToBeAugmented);
+//            DiagnosticData diagnosticData = reports.getDiagnosticData();
+//            diagnosticData.getRevocationDataInfo().forEach(revocationData -> {
+//                System.out.println("Revocation Data Info: " + revocationData);
+//            });
+
+            DSSDocument docAugmToLTA = PAdESsignature.augmentToLTALevel(docToBeAugm);
+            String fileSavePath = chooseSaveFilePathPDF();
+            saveFile(docAugmToLTA,fileSavePath);
             return;
         }
 

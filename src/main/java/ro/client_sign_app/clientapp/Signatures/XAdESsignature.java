@@ -1,7 +1,6 @@
 package ro.client_sign_app.clientapp.Signatures;
 
 import eu.europa.esig.dss.definition.DSSNamespace;
-import eu.europa.esig.dss.definition.xmldsig.XMLDSigNamespace;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -29,7 +28,6 @@ import ro.client_sign_app.clientapp.CSCLibrary.Cred_info_resp;
 
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.XMLSignature;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.security.cert.CertificateException;
